@@ -1,0 +1,78 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Crea tu tarjeta - ProfesionalTAP{% endblock %}
+
+{% block content %}
+<section class="form-page">
+    <div class="form-card form-card-wide">
+        <h1>Crea tu tarjeta profesional</h1>
+        <p class="form-subtitle">Completa tus datos y genera tu tarjeta de contacto digital en segundos.</p>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.sector.label }}
+                {{ form.sector(class="form-control") }}
+                {% for error in form.sector.errors %}
+                <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.business_name.label }}
+                {{ form.business_name(class="form-control", placeholder="Ej: Despacho García & Asociados") }}
+                {% for error in form.business_name.errors %}
+                <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="fields-header">
+                <h3>Datos de contacto</h3>
+                <p class="form-hint">Estos datos aparecerán en tu tarjeta NFC digital.</p>
+            </div>
+
+            <div class="form-group">
+                {{ form.contact_name.label }}
+                {{ form.contact_name(class="form-control", placeholder="Ej: María García López") }}
+                {% for error in form.contact_name.errors %}
+                <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.phone.label }}
+                {{ form.phone(class="form-control", placeholder="Ej: +34 612 345 678") }}
+                {% for error in form.phone.errors %}
+                <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.email.label }}
+                {{ form.email(class="form-control", placeholder="Ej: maria@despachogarcia.es") }}
+                {% for error in form.email.errors %}
+                <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.linkedin.label }}
+                {{ form.linkedin(class="form-control", placeholder="Ej: https://linkedin.com/in/mariagarcia") }}
+                {% for error in form.linkedin.errors %}
+                <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.website.label }}
+                {{ form.website(class="form-control", placeholder="Ej: https://despachogarcia.es") }}
+                {% for error in form.website.errors %}
+                <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            {{ form.submit(class="btn btn-block") }}
+        </form>
+    </div>
+</section>
+{% endblock %}

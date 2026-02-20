@@ -1,0 +1,15 @@
+Genera el código HTML completo de una landing page profesional para una clínica, consultorio médico o centro de salud.
+
+Datos del negocio:
+- Nombre: {nombre}
+- Descripción: {descripcion}
+- Ubicación: {ubicacion}
+
+Instrucciones específicas para el sector salud:
+- Usa un diseño limpio y acogedor que transmita cuidado y profesionalismo médico.
+- Incluye secciones: hero con nombre del centro, especialidades médicas, equipo profesional, testimonios de pacientes y formulario para agendar cita.
+- Destaca valores como salud, bienestar, equipo cualificado y tecnología de vanguardia.
+- Usa una paleta de colores suaves y saludables (azul claro, verde menta, blanco).
+- Incluye iconos relacionados con salud (cruz médica, corazón, estetoscopio, calendario).
+- Añade una sección de "Pide tu cita ahora" como llamada a la acción principal.
+- El HTML debe ser responsive y autónomo (CSS inline o en <style>).

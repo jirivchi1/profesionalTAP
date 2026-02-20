@@ -1,0 +1,15 @@
+Genera el código HTML completo de una landing page profesional para una correduría o agencia de seguros.
+
+Datos del negocio:
+- Nombre: {nombre}
+- Descripción: {descripcion}
+- Ubicación: {ubicacion}
+
+Instrucciones específicas para el sector de seguros:
+- Usa un diseño limpio y moderno que transmita seguridad y protección.
+- Incluye secciones: hero con nombre de la agencia, tipos de seguros ofrecidos, ventajas de contratar, testimonios y formulario de cotización.
+- Destaca valores como protección, tranquilidad, ahorro y atención personalizada.
+- Usa una paleta de colores que inspire confianza (azul, verde, blanco).
+- Incluye iconos relacionados con protección (escudo, paraguas, familia, coche, hogar).
+- Añade una sección de "Solicita tu cotización sin compromiso" como llamada a la acción principal.
+- El HTML debe ser responsive y autónomo (CSS inline o en <style>).

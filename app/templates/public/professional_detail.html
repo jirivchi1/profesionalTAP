@@ -1,0 +1,40 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ professional.name }} - ProfesionalTAP{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <a href="{{ url_for('public.professionals') }}" class="back-link">&larr; Volver al listado</a>
+        <h1>{{ professional.name }}</h1>
+        {% if professional.specialty %}
+        <p class="card-meta" style="font-size: 1.1rem;">{{ professional.specialty }}</p>
+        {% endif %}
+        {% if professional.phone %}
+        <p><strong>Teléfono:</strong> {{ professional.phone }}</p>
+        {% endif %}
+        {% if professional.bio %}
+        <p>{{ professional.bio }}</p>
+        {% endif %}
+
+        <h2 style="margin-top: 2.5rem;">Servicios</h2>
+        {% if professional.services %}
+        <div class="card-grid">
+            {% for service in professional.services %}
+            <div class="card">
+                <h3>{{ service.title }}</h3>
+                {% if service.description %}
+                <p>{{ service.description }}</p>
+                {% endif %}
+                {% if service.price %}
+                <p class="card-price">{{ '%.2f €' % service.price }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Este profesional aún no ha publicado servicios.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

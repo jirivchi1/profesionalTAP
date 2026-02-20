@@ -1,0 +1,15 @@
+Genera el código HTML completo de una landing page profesional para una inmobiliaria o agencia de bienes raíces.
+
+Datos del negocio:
+- Nombre: {nombre}
+- Descripción: {descripcion}
+- Ubicación: {ubicacion}
+
+Instrucciones específicas para el sector inmobiliario:
+- Usa un diseño elegante y visual que destaque propiedades y espacios.
+- Incluye secciones: hero con nombre de la inmobiliaria, propiedades destacadas, servicios (compra, venta, alquiler), sobre nosotros, testimonios y formulario de contacto.
+- Destaca valores como experiencia local, cartera de propiedades y asesoramiento personalizado.
+- Usa una paleta de colores cálida y sofisticada (tierra, dorado, blanco, verde oscuro).
+- Incluye iconos relacionados con propiedades (casa, edificio, llave, ubicación).
+- Añade una sección de "Agenda tu visita" como llamada a la acción principal.
+- El HTML debe ser responsive y autónomo (CSS inline o en <style>).

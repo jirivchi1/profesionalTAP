@@ -1,0 +1,73 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Dashboard - ProfesionalTAP{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <h1>Mi panel</h1>
+
+        <div class="dashboard-card">
+            <h2>Mi cuenta</h2>
+            <p><strong>Email:</strong> {{ current_user.email }}</p>
+        </div>
+
+        {% if current_user.professional %}
+        <div class="dashboard-card">
+            <h2>Perfil profesional</h2>
+            <p><strong>Nombre:</strong> {{ current_user.professional.name }}</p>
+            {% if current_user.professional.specialty %}
+            <p><strong>Especialidad:</strong> {{ current_user.professional.specialty }}</p>
+            {% endif %}
+            {% if current_user.professional.phone %}
+            <p><strong>Teléfono:</strong> {{ current_user.professional.phone }}</p>
+            {% endif %}
+            {% if current_user.professional.bio %}
+            <p><strong>Bio:</strong> {{ current_user.professional.bio }}</p>
+            {% endif %}
+            <a href="{{ url_for('dashboard.edit_profile') }}" class="btn btn-sm">Editar perfil</a>
+        </div>
+
+        <div class="dashboard-card">
+            <h2>Mis servicios</h2>
+            {% if current_user.professional.services %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in current_user.professional.services %}
+                    <tr>
+                        <td>{{ service.title }}</td>
+                        <td>{{ '%.2f €' % service.price if service.price else 'Sin precio' }}</td>
+                        <td class="actions">
+                            <a href="{{ url_for('dashboard.edit_service', service_id=service.id) }}" class="btn btn-sm">Editar</a>
+                            <form method="POST" action="{{ url_for('dashboard.delete_service', service_id=service.id) }}" class="inline-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este servicio?')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Aún no tienes servicios registrados.</p>
+            {% endif %}
+            <a href="{{ url_for('dashboard.create_service') }}" class="btn" style="margin-top: 1rem;">Añadir servicio</a>
+        </div>
+
+        {% else %}
+        <div class="dashboard-card">
+            <h2>Perfil profesional</h2>
+            <p>Aún no has creado tu perfil profesional.</p>
+            <a href="{{ url_for('dashboard.create_profile') }}" class="btn">Crear perfil</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

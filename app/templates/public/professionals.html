@@ -1,0 +1,30 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Profesionales - ProfesionalTAP{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <h1>Profesionales</h1>
+        {% if professionals %}
+        <div class="card-grid">
+            {% for prof in professionals %}
+            <div class="card">
+                <h3><a href="{{ url_for('public.professional_detail', prof_id=prof.id) }}">{{ prof.name }}</a></h3>
+                {% if prof.specialty %}
+                <p class="card-meta">{{ prof.specialty }}</p>
+                {% endif %}
+                {% if prof.bio %}
+                <p>{{ prof.bio[:120] }}{% if prof.bio|length > 120 %}...{% endif %}</p>
+                {% endif %}
+                <p class="card-meta">{{ prof.services|length }} servicio{{ 's' if prof.services|length != 1 }}</p>
+                <a href="{{ url_for('public.professional_detail', prof_id=prof.id) }}" class="btn btn-sm">Ver perfil</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Aún no hay profesionales registrados.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

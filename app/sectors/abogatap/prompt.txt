@@ -1,0 +1,15 @@
+Genera el código HTML completo de una landing page profesional para un despacho de abogados.
+
+Datos del negocio:
+- Nombre: {nombre}
+- Descripción: {descripcion}
+- Ubicación: {ubicacion}
+
+Instrucciones específicas para el sector legal:
+- Usa un diseño sobrio y profesional que transmita confianza y seriedad.
+- Incluye secciones: hero con nombre del despacho, áreas de práctica, sobre nosotros, testimonios de clientes y formulario de contacto.
+- Destaca valores como confidencialidad, experiencia y compromiso con el cliente.
+- Usa una paleta de colores oscuros (azul marino, gris, dorado) que refuerce la imagen de autoridad legal.
+- Incluye iconos relacionados con justicia (balanza, mazo, escudo).
+- Añade una sección de "Primera consulta gratuita" como llamada a la acción principal.
+- El HTML debe ser responsive y autónomo (CSS inline o en <style>).

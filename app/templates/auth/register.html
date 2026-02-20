@@ -1,0 +1,39 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Registro - ProfesionalTAP{% endblock %}
+
+{% block content %}
+<section class="form-page">
+    <div class="container">
+        <div class="form-card">
+            <h1>Crear cuenta</h1>
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.email.label }}
+                    {{ form.email(class="form-control", placeholder="tu@email.com") }}
+                    {% for error in form.email.errors %}
+                    <span class="form-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label }}
+                    {{ form.password(class="form-control") }}
+                    {% for error in form.password.errors %}
+                    <span class="form-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.password2.label }}
+                    {{ form.password2(class="form-control") }}
+                    {% for error in form.password2.errors %}
+                    <span class="form-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {{ form.submit(class="btn btn-block") }}
+            </form>
+            <p class="form-footer">¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}">Inicia sesión</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}

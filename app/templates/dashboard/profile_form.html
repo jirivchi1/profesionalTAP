@@ -1,0 +1,45 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ title }} - ProfesionalTAP{% endblock %}
+
+{% block content %}
+<section class="form-page">
+    <div class="container">
+        <div class="form-card form-card-wide">
+            <h1>{{ title }}</h1>
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.name.label }}
+                    {{ form.name(class="form-control", placeholder="Tu nombre completo") }}
+                    {% for error in form.name.errors %}
+                    <span class="form-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.specialty.label }}
+                    {{ form.specialty(class="form-control", placeholder="Ej: Electricista, Fontanero...") }}
+                    {% for error in form.specialty.errors %}
+                    <span class="form-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.phone.label }}
+                    {{ form.phone(class="form-control", placeholder="+34 600 000 000") }}
+                    {% for error in form.phone.errors %}
+                    <span class="form-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.bio.label }}
+                    {{ form.bio(class="form-control", rows="4", placeholder="Cuéntanos sobre tu experiencia...") }}
+                    {% for error in form.bio.errors %}
+                    <span class="form-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {{ form.submit(class="btn btn-block") }}
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

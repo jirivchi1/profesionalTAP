@@ -1,0 +1,99 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Pedidos - Admin - ProfesionalTAP{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <a href="{{ url_for('admin.index') }}" class="back-link">&larr; Volver al panel</a>
+        <h1>Todos los pedidos</h1>
+
+        <!-- Filters -->
+        <div class="filters">
+            <form method="GET" class="filter-form">
+                <select name="tipo" class="form-control filter-select" onchange="this.form.submit()">
+                    <option value="">Todos los tipos</option>
+                    <option value="b2b" {{ 'selected' if filter_type == 'b2b' }}>B2B</option>
+                    <option value="b2c" {{ 'selected' if filter_type == 'b2c' }}>B2C</option>
+                </select>
+                <select name="sector" class="form-control filter-select" onchange="this.form.submit()">
+                    <option value="">Todos los sectores</option>
+                    <option value="abogatap" {{ 'selected' if filter_sector == 'abogatap' }}>AbogaTAP</option>
+                    <option value="segurotap" {{ 'selected' if filter_sector == 'segurotap' }}>SeguroTAP</option>
+                    <option value="inmotap" {{ 'selected' if filter_sector == 'inmotap' }}>InmoTAP</option>
+                    <option value="saludtap" {{ 'selected' if filter_sector == 'saludtap' }}>SaludTAP</option>
+                </select>
+            </form>
+        </div>
+
+        {% if orders.items %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo</th>
+                    <th>Sector</th>
+                    <th>Cliente</th>
+                    <th>Negocio / Contacto</th>
+                    <th>Fecha</th>
+                    <th>Enlace público</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in orders.items %}
+                <tr>
+                    <td>#{{ req.id }}</td>
+                    <td><span class="badge {{ 'badge-b2b' if req.is_b2b else 'badge-b2c' }}">{{ req.landing_type | upper }}</span></td>
+                    <td>{{ req.sector | upper }}</td>
+                    <td>{{ req.user.email }}</td>
+                    <td>
+                        <strong>{{ req.business_name }}</strong>
+                        {% if req.is_b2b and req.contact_name %}
+                        <br><span class="text-light">{{ req.contact_name }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ req.created_at.strftime('%d/%m/%Y') }}</td>
+                    <td>
+                        <div class="copy-link">
+                            <code class="link-code" id="link-{{ req.id }}">{{ base_url }}/p/{{ req.public_slug }}</code>
+                            <button type="button" class="btn btn-sm btn-copy" onclick="copyLink('link-{{ req.id }}', this)">Copiar</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if orders.pages > 1 %}
+        <div class="pagination">
+            {% if orders.has_prev %}
+            <a href="{{ url_for('admin.orders', page=orders.prev_num, tipo=filter_type, sector=filter_sector) }}" class="btn btn-sm">&larr; Anterior</a>
+            {% endif %}
+            <span class="pagination-info">Página {{ orders.page }} de {{ orders.pages }}</span>
+            {% if orders.has_next %}
+            <a href="{{ url_for('admin.orders', page=orders.next_num, tipo=filter_type, sector=filter_sector) }}" class="btn btn-sm">Siguiente &rarr;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <p>No hay pedidos que coincidan con los filtros.</p>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+function copyLink(elementId, btn) {
+    var code = document.getElementById(elementId);
+    navigator.clipboard.writeText(code.textContent.trim()).then(function() {
+        btn.textContent = 'Copiado!';
+        btn.classList.add('btn-copied');
+        setTimeout(function() {
+            btn.textContent = 'Copiar';
+            btn.classList.remove('btn-copied');
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

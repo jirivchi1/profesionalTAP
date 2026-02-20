@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ req.business_name }} - ProfesionalTAP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f9fafb; color: #1f2937; }
+        .card { background: #fff; border-radius: 1rem; padding: 2.5rem; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .sector { color: #6b7280; font-size: 0.875rem; margin-bottom: 1.5rem; }
+        .info { text-align: left; margin-bottom: 1.5rem; }
+        .info a { display: block; padding: 0.625rem 0; color: #2563eb; text-decoration: none; border-bottom: 1px solid #e5e7eb; }
+        .info a:last-child { border-bottom: none; }
+        .info a:hover { color: #1d4ed8; }
+        .pending { color: #92400e; background: #fffbeb; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>{{ req.business_name }}</h1>
+        <p class="sector">{{ req.sector | upper }}</p>
+        {% if req.is_b2b and req.contact_name %}
+        <div class="info">
+            <p style="font-weight:600; margin-bottom:0.75rem;">{{ req.contact_name }}</p>
+            {% if req.phone %}<a href="tel:{{ req.phone }}">{{ req.phone }}</a>{% endif %}
+            {% if req.email %}<a href="mailto:{{ req.email }}">{{ req.email }}</a>{% endif %}
+            {% if req.linkedin %}<a href="{{ req.linkedin }}" target="_blank">LinkedIn</a>{% endif %}
+            {% if req.website %}<a href="{{ req.website }}" target="_blank">{{ req.website }}</a>{% endif %}
+        </div>
+        {% else %}
+        <p class="pending">Página en preparación. Vuelve pronto.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ req.business_name }} - ProfesionalTAP{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <a href="{{ url_for('landing.list') }}" class="back-link">&larr; Volver a mis landings</a>
+
+        <div class="dashboard-card">
+            <h2>{{ req.business_name }}</h2>
+            <p><strong>Tipo:</strong> {{ 'B2B - Tarjeta de contacto' if req.is_b2b else 'B2C - Landing page' }}</p>
+            <p><strong>Sector:</strong> {{ req.sector | upper }}</p>
+            {% if req.is_b2b %}
+            <p><strong>Contacto:</strong> {{ req.contact_name }}</p>
+            {% if req.phone %}<p><strong>Teléfono:</strong> {{ req.phone }}</p>{% endif %}
+            {% if req.email %}<p><strong>Email:</strong> {{ req.email }}</p>{% endif %}
+            {% if req.linkedin %}<p><strong>LinkedIn:</strong> {{ req.linkedin }}</p>{% endif %}
+            {% if req.website %}<p><strong>Web:</strong> {{ req.website }}</p>{% endif %}
+            {% else %}
+            <p><strong>Ubicación:</strong> {{ req.location }}</p>
+            <p><strong>Descripción:</strong> {{ req.description }}</p>
+            {% endif %}
+            <p><strong>Creado:</strong> {{ req.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+        </div>
+
+        {% if req.is_b2b %}
+        <div class="dashboard-card">
+            <h2>Vista previa de tu tarjeta</h2>
+            <div class="landing-preview">
+                <iframe id="card-preview" srcdoc="{{ req.generated_html | e }}" style="width:100%; height:700px; border:none; border-radius:0.5rem;"></iframe>
+            </div>
+        </div>
+
+        <!-- Congratulations + Payment -->
+        <div class="congrats-card">
+            <div class="congrats-icon">&#127881;</div>
+            <h2>¡Tu tarjeta está lista!</h2>
+            <p>Hemos generado tu tarjeta de contacto profesional. Al completar el pago, la vincularemos a tu tarjeta NFC y te la enviaremos.</p>
+            <a href="#" class="btn btn-pay">Finalizar y pagar</a>
+            <p class="congrats-note">Recibirás tu tarjeta NFC configurada en 24-48h.</p>
+        </div>
+        {% else %}
+        <div class="dashboard-card">
+            <h2>Prompt generado</h2>
+            <div class="prompt-preview">{{ req.generated_prompt }}</div>
+        </div>
+        {% if req.generated_html %}
+        <div class="dashboard-card">
+            <h2>Landing Page generada</h2>
+            <div class="landing-preview">
+                {{ req.generated_html | safe }}
+            </div>
+        </div>
+        {% else %}
+        <div class="dashboard-card">
+            <h2>Landing Page</h2>
+            <p>La generación por IA estará disponible próximamente. El prompt ya está listo para ser procesado.</p>
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
