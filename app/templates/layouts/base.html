@@ -17,7 +17,10 @@
                     <li><a href="{{ url_for('public.about') }}">Sobre nosotros</a></li>
                     <li><a href="{{ url_for('public.contact') }}">Contacto</a></li>
                     {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('dashboard.index') }}">Mi panel</a></li>
                     <li><a href="{{ url_for('auth.logout') }}">Salir</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('auth.login') }}">Entrar</a></li>
                     {% endif %}
                 </ul>
             </nav>
