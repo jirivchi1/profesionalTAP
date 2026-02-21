@@ -40,14 +40,14 @@ SECTOR_THEMES = {
         'community': 'InmoTAP',
         'community_desc': 'Conecta con agentes inmobiliarios, comparte propiedades y cierra más operaciones.',
     },
-    'saludtap': {
-        'label': 'Salud',
-        'primary': '#0e7490',
-        'bg': '#f0f9fb',
-        'icon_bg': '#e0f4f8',
-        'icon': '\U0001fa7a',
-        'community': 'SaludTAP',
-        'community_desc': 'Forma parte de la comunidad de profesionales de salud, comparte conocimiento y colabora.',
+    'consultortap': {
+        'label': 'Consultoría',
+        'primary': '#4f46e5',
+        'bg': '#f5f3ff',
+        'icon_bg': '#ede9fe',
+        'icon': '\U0001f4bc',
+        'community': 'ConsultorTAP',
+        'community_desc': 'Conecta con consultores y asesores, comparte metodologías y amplía tu red de clientes.',
     },
 }
 

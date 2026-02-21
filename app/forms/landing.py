@@ -8,7 +8,7 @@ class LandingForm(FlaskForm):
         ('abogatap', 'AbogaTAP - Abogados'),
         ('segurotap', 'SeguroTAP - Seguros'),
         ('inmotap', 'InmoTAP - Inmobiliaria'),
-        ('saludtap', 'SaludTAP - Salud'),
+        ('consultortap', 'ConsultorTAP - Consultoría'),
     ], validators=[DataRequired()])
 
     contact_name = StringField('Nombre completo', validators=[

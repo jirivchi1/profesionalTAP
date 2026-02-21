@@ -1,0 +1,15 @@
+Genera el código HTML completo de una landing page profesional para un consultor o asesor de empresa.
+
+Datos del negocio:
+- Nombre: {nombre}
+- Descripción: {descripcion}
+- Ubicación: {ubicacion}
+
+Instrucciones específicas para el sector consultoría:
+- Usa un diseño moderno y ejecutivo que transmita expertise y resultados.
+- Incluye secciones: hero con propuesta de valor clara, servicios de consultoría, metodología de trabajo, casos de éxito/resultados y formulario de contacto.
+- Destaca valores como ROI, eficiencia, transformación y experiencia sectorial.
+- Usa una paleta de colores corporativos (índigo, azul eléctrico, blanco) que refuerce la imagen de innovación y profesionalidad.
+- Incluye iconos relacionados con estrategia y negocio (gráficas, engranajes, diana).
+- Añade una sección de "Diagnóstico gratuito" o "Primera sesión sin compromiso" como llamada a la acción principal.
+- El HTML debe ser responsive y autónomo (CSS inline o en <style>).
