@@ -26,9 +26,13 @@ class LandingRequest(db.Model):
 
     generated_prompt = db.Column(db.Text, nullable=True)
     generated_html = db.Column(db.Text, nullable=True)
+    qr_code = db.Column(db.Text, nullable=True)  # base64 PNG
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     user = db.relationship('User', backref=db.backref('landing_requests', lazy=True))
+    services = db.relationship('LandingService', backref='request', lazy=True,
+                               order_by='LandingService.order')
+    contacts = db.relationship('Contact', backref='request', lazy=True)
 
     @property
     def is_b2b(self):

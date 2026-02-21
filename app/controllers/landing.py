@@ -1,15 +1,17 @@
-import os
-from flask import Blueprint, render_template, redirect, url_for, flash, session
+import io
+import base64
+import qrcode
+from flask import Blueprint, render_template, redirect, url_for, flash, session, request
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.forms.landing import LandingForm
+from app.forms.landing import LandingForm, ContactForm
 from app.models.landing import LandingRequest
+from app.models.landing_service import LandingService
+from app.models.contact import Contact
 
 landing = Blueprint('landing', __name__)
 
-SECTORS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'sectors')
-
-# Theme config per sector for B2B cards
+# Theme config per sector
 SECTOR_THEMES = {
     'abogatap': {
         'label': 'Abogados',
@@ -50,19 +52,12 @@ SECTOR_THEMES = {
 }
 
 
-def render_b2b_card(sector, business_name, contact_name, phone, email, linkedin, website):
-    """Render B2B contact card HTML from template — no AI needed."""
-    theme = SECTOR_THEMES.get(sector, SECTOR_THEMES['abogatap'])
-    return render_template('landing/cards/b2b_card.html',
-        theme=theme,
-        sector_label=theme['label'],
-        business_name=business_name,
-        contact_name=contact_name,
-        phone=phone or '',
-        email=email or '',
-        linkedin=linkedin or '',
-        website=website or '',
-    )
+def _generate_qr_b64(url: str) -> str:
+    """Generate a QR code for *url* and return it as a base64-encoded PNG string."""
+    img = qrcode.make(url)
+    buf = io.BytesIO()
+    img.save(buf, format='PNG')
+    return base64.b64encode(buf.getvalue()).decode('utf-8')
 
 
 @landing.route('/comenzar', methods=['GET', 'POST'])
@@ -70,21 +65,11 @@ def create():
     """Public — no login required."""
     form = LandingForm()
     if form.validate_on_submit():
-        generated_html = render_b2b_card(
-            sector=form.sector.data,
-            business_name=form.business_name.data,
-            contact_name=form.contact_name.data,
-            phone=form.phone.data,
-            email=form.email.data,
-            linkedin=form.linkedin.data,
-            website=form.website.data,
-        )
-
         req = LandingRequest(
             user_id=current_user.id if current_user.is_authenticated else None,
             landing_type='b2b',
             sector=form.sector.data,
-            business_name=form.business_name.data,
+            business_name=form.contact_name.data,
             description='',
             location='',
             contact_name=form.contact_name.data,
@@ -92,21 +77,41 @@ def create():
             email=form.email.data,
             linkedin=form.linkedin.data,
             website=form.website.data,
-            generated_html=generated_html,
         )
         db.session.add(req)
+        db.session.flush()  # get req.id and public_slug before commit
+
+        # Save services that have a title
+        services_data = [
+            (form.service_1_title.data, form.service_1_description.data),
+            (form.service_2_title.data, form.service_2_description.data),
+            (form.service_3_title.data, form.service_3_description.data),
+        ]
+        for i, (title, desc) in enumerate(services_data):
+            if title and title.strip():
+                svc = LandingService(
+                    request_id=req.id,
+                    title=title.strip(),
+                    description=desc.strip() if desc else None,
+                    order=i,
+                )
+                db.session.add(svc)
+
+        # Generate QR pointing to the public profile
+        public_url = url_for('landing.public_view', slug=req.public_slug, _external=True)
+        req.qr_code = _generate_qr_b64(public_url)
+
         db.session.commit()
 
-        # Store in session so we can link after registration
         session['pending_request_id'] = req.id
-
         return redirect(url_for('landing.result', slug=req.public_slug))
+
     return render_template('landing/create.html', form=form)
 
 
 @landing.route('/resultado/<slug>')
 def result(slug):
-    """Public result page — preview + payment + community invite."""
+    """Public result page — QR + community invite."""
     req = LandingRequest.query.filter_by(public_slug=slug).first_or_404()
     theme = SECTOR_THEMES.get(req.sector, SECTOR_THEMES['abogatap'])
     return render_template('landing/result.html', req=req, theme=theme)
@@ -120,10 +125,45 @@ def list():
     return render_template('landing/list.html', requests=requests)
 
 
+def _service_choices(req):
+    """Return [(id, title)] choices for a request's services, with a blank first option."""
+    choices = [(0, 'Sin preferencia')]
+    choices += [(s.id, s.title) for s in req.services]
+    return choices
+
+
 @landing.route('/p/<slug>')
 def public_view(slug):
-    """Public NFC card page — no login required."""
+    """Public profile page — visible to anyone who scans the QR."""
     req = LandingRequest.query.filter_by(public_slug=slug).first_or_404()
-    if req.generated_html:
-        return req.generated_html
-    return render_template('landing/public_placeholder.html', req=req)
+    theme = SECTOR_THEMES.get(req.sector, SECTOR_THEMES['abogatap'])
+    form = ContactForm()
+    form.service_id.choices = _service_choices(req)
+    return render_template('landing/public_placeholder.html', req=req, theme=theme, form=form)
+
+
+@landing.route('/p/<slug>/contactar', methods=['POST'])
+def contact(slug):
+    """Receive contact data left by someone who scanned the QR."""
+    req = LandingRequest.query.filter_by(public_slug=slug).first_or_404()
+    form = ContactForm()
+    form.service_id.choices = _service_choices(req)
+    if form.validate_on_submit():
+        selected_service_id = form.service_id.data if form.service_id.data else None
+        # 0 means "sin preferencia"
+        if selected_service_id == 0:
+            selected_service_id = None
+        c = Contact(
+            request_id=req.id,
+            service_id=selected_service_id,
+            name=form.name.data,
+            email=form.email.data or None,
+            phone=form.phone.data or None,
+            message=form.message.data or None,
+        )
+        db.session.add(c)
+        db.session.commit()
+        flash('¡Gracias! Tus datos han sido enviados correctamente.', 'success')
+    else:
+        flash('Por favor, completa al menos tu nombre.', 'danger')
+    return redirect(url_for('landing.public_view', slug=slug))

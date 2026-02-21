@@ -1,14 +1,20 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Crea tu tarjeta - ProfesionalTAP{% endblock %}
+{% block title %}Crea tu perfil - ProfesionalTAP{% endblock %}
 
 {% block content %}
 <section class="form-page">
     <div class="form-card form-card-wide">
-        <h1>Crea tu tarjeta profesional</h1>
-        <p class="form-subtitle">Completa tus datos y genera tu tarjeta de contacto digital en segundos.</p>
+        <h1>Crea tu perfil profesional</h1>
+        <p class="form-subtitle">Completa tus datos, añade tus servicios y genera tu QR en segundos.</p>
+
         <form method="POST">
             {{ form.hidden_tag() }}
+
+            <!-- Sección: Tu perfil -->
+            <div class="fields-header">
+                <h3>Tu perfil</h3>
+            </div>
 
             <div class="form-group">
                 {{ form.sector.label }}
@@ -16,19 +22,6 @@
                 {% for error in form.sector.errors %}
                 <span class="form-error">{{ error }}</span>
                 {% endfor %}
-            </div>
-
-            <div class="form-group">
-                {{ form.business_name.label }}
-                {{ form.business_name(class="form-control", placeholder="Ej: Despacho García & Asociados") }}
-                {% for error in form.business_name.errors %}
-                <span class="form-error">{{ error }}</span>
-                {% endfor %}
-            </div>
-
-            <div class="fields-header">
-                <h3>Datos de contacto</h3>
-                <p class="form-hint">Estos datos aparecerán en tu tarjeta NFC digital.</p>
             </div>
 
             <div class="form-group">
@@ -71,8 +64,62 @@
                 {% endfor %}
             </div>
 
-            {{ form.submit(class="btn btn-block") }}
+            <!-- Sección: Tus servicios -->
+            <div class="fields-header" style="margin-top: 1.5rem;">
+                <h3>Tus servicios</h3>
+                <p class="form-hint">Describe hasta 3 servicios que ofreces. Solo necesitas el título.</p>
+            </div>
+
+            <!-- Servicio 1 (siempre visible) -->
+            <div class="service-block" id="service-1">
+                <div class="form-group">
+                    {{ form.service_1_title(class="form-control", placeholder="Ej: Consultoría legal") }}
+                </div>
+                <div class="form-group">
+                    {{ form.service_1_description(class="form-control", rows=2, placeholder="Breve descripción (opcional)") }}
+                </div>
+            </div>
+
+            <!-- Servicio 2 (oculto por defecto) -->
+            <div class="service-block" id="service-2" style="display:none;">
+                <div class="form-group">
+                    {{ form.service_2_title(class="form-control", placeholder="Ej: Redacción de contratos") }}
+                </div>
+                <div class="form-group">
+                    {{ form.service_2_description(class="form-control", rows=2, placeholder="Breve descripción (opcional)") }}
+                </div>
+            </div>
+
+            <!-- Servicio 3 (oculto por defecto) -->
+            <div class="service-block" id="service-3" style="display:none;">
+                <div class="form-group">
+                    {{ form.service_3_title(class="form-control", placeholder="Ej: Defensa en juicio") }}
+                </div>
+                <div class="form-group">
+                    {{ form.service_3_description(class="form-control", rows=2, placeholder="Breve descripción (opcional)") }}
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary" id="add-service-btn" onclick="addService()">
+                + Añadir servicio
+            </button>
+
+            <div style="margin-top: 1.5rem;">
+                {{ form.submit(class="btn btn-block") }}
+            </div>
         </form>
     </div>
 </section>
+
+<script>
+    var nextService = 2;
+    function addService() {
+        if (nextService > 3) return;
+        document.getElementById('service-' + nextService).style.display = 'block';
+        nextService++;
+        if (nextService > 3) {
+            document.getElementById('add-service-btn').style.display = 'none';
+        }
+    }
+</script>
 {% endblock %}

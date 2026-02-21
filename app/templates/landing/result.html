@@ -1,26 +1,34 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Tu tarjeta - {{ req.business_name }} - ProfesionalTAP{% endblock %}
+{% block title %}Tu QR - {{ req.contact_name }} - ProfesionalTAP{% endblock %}
 
 {% block content %}
 <section class="page-section">
     <div class="container">
 
-        <!-- Preview -->
-        <div class="dashboard-card">
-            <h2>Vista previa de tu tarjeta</h2>
-            <div class="landing-preview">
-                <iframe id="card-preview" srcdoc="{{ req.generated_html | e }}" style="width:100%; height:700px; border:none; border-radius:0.5rem;"></iframe>
-            </div>
-        </div>
-
-        <!-- Congratulations + Payment -->
-        <div class="congrats-card">
-            <div class="congrats-icon">&#127881;</div>
-            <h2>¡Tu tarjeta está lista!</h2>
-            <p>Hemos generado tu tarjeta de contacto profesional. Al completar el pago, la vincularemos a tu tarjeta NFC y te la enviaremos.</p>
-            <a href="#" class="btn btn-pay">Finalizar y pagar</a>
-            <p class="congrats-note">Recibirás tu tarjeta NFC configurada en 24-48h.</p>
+        <!-- QR Code -->
+        <div class="dashboard-card" style="text-align: center;">
+            <h2>¡Tu perfil y QR están listos!</h2>
+            <p style="color:#6b7280; margin-bottom:1.5rem;">
+                Comparte este QR con tus clientes. Al escanearlo verán tu perfil y podrán dejarte sus datos.
+            </p>
+            {% if req.qr_code %}
+            <img src="data:image/png;base64,{{ req.qr_code }}"
+                 alt="Código QR de {{ req.contact_name }}"
+                 style="width: 220px; height: 220px; display: block; margin: 0 auto 1rem;">
+            <a href="data:image/png;base64,{{ req.qr_code }}"
+               download="qr-{{ req.public_slug }}.png"
+               class="btn"
+               style="display: inline-block; margin-bottom: 1rem;">
+                Descargar QR
+            </a>
+            {% endif %}
+            <p style="font-size:0.85rem; color:#9ca3af;">
+                Tu perfil público:
+                <a href="{{ url_for('landing.public_view', slug=req.public_slug) }}" target="_blank">
+                    /p/{{ req.public_slug }}
+                </a>
+            </p>
         </div>
 
         <!-- Community invite -->
@@ -33,7 +41,11 @@
                 <li>Visibilidad en nuestro directorio</li>
                 <li>Ofertas y recursos exclusivos</li>
             </ul>
-            <a href="{{ url_for('auth.register', comunidad=req.sector, ref=req.public_slug) }}" class="btn btn-community" style="background: {{ theme.primary }};">Unirme a {{ theme.community }}</a>
+            <a href="{{ url_for('auth.register', comunidad=req.sector, ref=req.public_slug) }}"
+               class="btn btn-community"
+               style="background: {{ theme.primary }};">
+                Unirme a {{ theme.community }}
+            </a>
             <p class="community-note">Registro gratuito. Sin compromiso.</p>
         </div>
 
