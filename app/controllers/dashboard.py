@@ -1,18 +1,51 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.forms.professional import ProfessionalForm
 from app.forms.service import ServiceForm
 from app.models.professional import Professional
 from app.models.service import Service
+from app.models.landing import LandingRequest
+from app.models.contact import Contact
 
 dashboard = Blueprint('dashboard', __name__)
+
+
+def _generar_mensaje(req, contact, service_name):
+    y_servicio = f' y te interesó el servicio "{service_name}"' if service_name else ''
+    profesional = req.contact_name or req.business_name
+    telefono = req.phone or '—'
+    email_prof = req.email or '—'
+    return (
+        f"Hola {contact.name},\n\n"
+        f"He visto que escaneaste mi QR{y_servicio}.\n\n"
+        f"Soy {profesional} y me encantaría contarte cómo puedo ayudarte.\n\n"
+        f"¿Tienes unos minutos esta semana para una llamada rápida?\n\n"
+        f"Puedes contactarme en:\n"
+        f"📞 {telefono}\n"
+        f"✉️ {email_prof}\n\n"
+        f"¡Quedo a tu disposición!\n"
+        f"{profesional}"
+    )
 
 
 @dashboard.route('/dashboard')
 @login_required
 def index():
-    return render_template('dashboard/index.html')
+    landing_requests = LandingRequest.query.filter_by(user_id=current_user.id)\
+        .order_by(LandingRequest.created_at.desc()).all()
+    return render_template('dashboard/index.html', landing_requests=landing_requests)
+
+
+@dashboard.route('/dashboard/mensaje/<int:contact_id>')
+@login_required
+def mensaje(contact_id):
+    contact = db.session.get(Contact, contact_id)
+    if not contact or contact.request.user_id != current_user.id:
+        abort(403)
+    req = contact.request
+    service_name = contact.service.title if contact.service_id else None
+    return jsonify({'message': _generar_mensaje(req, contact, service_name)})
 
 
 # --- Professional profile ---

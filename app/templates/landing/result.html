@@ -31,6 +31,39 @@
             </p>
         </div>
 
+        <!-- CTA account creation -->
+        {% if current_user.is_authenticated %}
+        <div class="dashboard-card" style="text-align: center;">
+            <h2>Gestiona tus contactos</h2>
+            <p style="color:#6b7280; margin-bottom:1.5rem;">
+                Ve a tu dashboard para ver quién ha escaneado tu QR y enviarles un mensaje de seguimiento.
+            </p>
+            <a href="{{ url_for('dashboard.index') }}" class="btn">Ir a mi dashboard</a>
+        </div>
+        {% else %}
+        <div class="dashboard-card" style="text-align: center; border-left: 4px solid #3b82f6;">
+            <h2>Guarda tu perfil y gestiona tus contactos</h2>
+            <p style="color:#6b7280; margin-bottom:1rem;">
+                Crea una cuenta gratuita para:
+            </p>
+            <ul style="text-align:left; display:inline-block; margin-bottom:1.5rem; color:#374151;">
+                <li>Ver quién ha escaneado tu QR</li>
+                <li>Recibir los datos de contacto de tus clientes</li>
+                <li>Enviar mensajes de seguimiento personalizados</li>
+                <li>Acceder a tu perfil desde cualquier dispositivo</li>
+            </ul>
+            <div>
+                <a href="{{ url_for('auth.register', ref=req.public_slug) }}" class="btn" style="margin-right: 0.5rem;">
+                    Crear cuenta gratis
+                </a>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color:#6b7280;">
+                ¿Ya tienes cuenta?
+                <a href="{{ url_for('auth.login') }}" style="color:#3b82f6;">Iniciar sesión</a>
+            </p>
+        </div>
+        {% endif %}
+
         <!-- Community invite -->
         <div class="community-card" style="border-color: {{ theme.primary }};">
             <div class="community-icon">{{ theme.icon }}</div>

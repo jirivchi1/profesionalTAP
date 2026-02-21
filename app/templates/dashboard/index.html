@@ -68,6 +68,131 @@
             <a href="{{ url_for('dashboard.create_profile') }}" class="btn">Crear perfil</a>
         </div>
         {% endif %}
+
+        <!-- TapShare QR profiles section -->
+        <h2 style="margin-top: 2rem; margin-bottom: 1rem;">Mis perfiles QR</h2>
+
+        {% if landing_requests %}
+        {% for req in landing_requests %}
+        <div class="dashboard-card" style="margin-bottom: 1.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+                <div>
+                    <h3 style="margin:0 0 0.25rem;">{{ req.contact_name or req.business_name }}</h3>
+                    <span style="font-size:0.85rem; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">
+                        {{ req.sector }}
+                    </span>
+                </div>
+                <a href="{{ url_for('landing.public_view', slug=req.public_slug) }}"
+                   target="_blank"
+                   class="btn btn-sm">
+                    Ver perfil público ↗
+                </a>
+            </div>
+
+            {% set total_contacts = req.contacts | length %}
+            {% if total_contacts > 0 %}
+            {# Compute most demanded service #}
+            {% set ns = namespace(max_count=0, max_title='') %}
+            {% for contact in req.contacts %}
+                {% if contact.service_id %}
+                    {% set count = req.contacts | selectattr('service_id', 'equalto', contact.service_id) | list | length %}
+                    {% if count > ns.max_count %}
+                        {% set ns.max_count = count %}
+                        {% set ns.max_title = contact.service.title %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+
+            <div style="display:flex; gap:1.5rem; margin: 1rem 0; padding: 0.75rem 1rem; background:#f9fafb; border-radius:8px; flex-wrap:wrap;">
+                <div>
+                    <span style="font-size:1.5rem; font-weight:700; color:#1f2937;">{{ total_contacts }}</span>
+                    <span style="font-size:0.85rem; color:#6b7280; display:block;">contactos totales</span>
+                </div>
+                {% if ns.max_title %}
+                <div>
+                    <span style="font-size:1rem; font-weight:600; color:#1f2937;">{{ ns.max_title }} ({{ ns.max_count }})</span>
+                    <span style="font-size:0.85rem; color:#6b7280; display:block;">servicio más demandado</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Servicio</th>
+                        <th>Email</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contact in req.contacts %}
+                    <tr>
+                        <td>{{ contact.name }}</td>
+                        <td>{{ contact.service.title if contact.service_id else 'Sin preferencia' }}</td>
+                        <td>{{ contact.email or '—' }}</td>
+                        <td>
+                            <button class="btn btn-sm"
+                                    onclick="abrirMensaje({{ contact.id }})">
+                                Mensaje ✨
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="margin-top:1rem; color:#6b7280;">
+                Aún no has recibido contactos. Comparte tu QR para empezar.
+            </p>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        {% else %}
+        <div class="dashboard-card" style="text-align:center;">
+            <p style="color:#6b7280; margin-bottom:1rem;">
+                Aún no tienes ningún perfil QR creado.
+            </p>
+            <a href="{{ url_for('landing.comenzar') }}" class="btn">Crear mi perfil QR</a>
+        </div>
+        {% endif %}
+
     </div>
 </section>
+
+<!-- Mensaje modal -->
+<dialog id="mensajeModal" style="border:none; border-radius:12px; padding:2rem; max-width:560px; width:90%; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+    <h3 style="margin:0 0 1rem;">Mensaje de seguimiento</h3>
+    <textarea id="mensajeTexto"
+              style="width:100%; height:220px; padding:0.75rem; border:1px solid #d1d5db; border-radius:8px; font-family:inherit; font-size:0.9rem; resize:vertical; box-sizing:border-box;"
+              readonly></textarea>
+    <div style="display:flex; gap:0.75rem; margin-top:1rem; justify-content:flex-end;">
+        <button class="btn btn-sm" onclick="copiarMensaje()" id="btnCopiar">Copiar</button>
+        <button class="btn btn-sm" onclick="document.getElementById('mensajeModal').close()">Cerrar</button>
+    </div>
+</dialog>
+
+<script>
+function abrirMensaje(contactId) {
+    const modal = document.getElementById('mensajeModal');
+    const textarea = document.getElementById('mensajeTexto');
+    textarea.value = 'Cargando…';
+    modal.showModal();
+
+    fetch('/dashboard/mensaje/' + contactId)
+        .then(r => r.json())
+        .then(data => { textarea.value = data.message; })
+        .catch(() => { textarea.value = 'Error al cargar el mensaje.'; });
+}
+
+function copiarMensaje() {
+    const texto = document.getElementById('mensajeTexto').value;
+    navigator.clipboard.writeText(texto).then(() => {
+        const btn = document.getElementById('btnCopiar');
+        btn.textContent = '¡Copiado!';
+        setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+    });
+}
+</script>
 {% endblock %}
