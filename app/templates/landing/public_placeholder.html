@@ -4,13 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ req.contact_name }} - ProfesionalTAP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Apply saved theme before paint -->
+    <script>
+        (function () {
+            var t = localStorage.getItem('theme');
+            if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        }());
+    </script>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-page:   {{ theme.bg }};
+            --bg-card:   #ffffff;
+            --text:      #1f2937;
+            --text-muted:#6b7280;
+            --border:    #e5e7eb;
+            --input-bg:  #ffffff;
+        }
+        html.dark {
+            --bg-page:   #171717;
+            --bg-card:   #262626;
+            --text:      #e5e5e5;
+            --text-muted:#a3a3a3;
+            --border:    #404040;
+            --input-bg:  #1f1f1f;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: {{ theme.bg }};
-            color: #1f2937;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-page);
+            color: var(--text);
             min-height: 100vh;
+            transition: background 0.2s, color 0.2s;
         }
 
         /* Header */
@@ -41,6 +72,22 @@
             font-size: 0.82rem;
         }
 
+        /* Theme toggle */
+        .theme-btn {
+            position: fixed; top: 0.75rem; right: 0.75rem;
+            background: rgba(255,255,255,0.15); backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 0.375rem; cursor: pointer;
+            padding: 0.4rem 0.5rem; color: #fff;
+            display: flex; align-items: center; z-index: 50;
+            transition: background 0.15s;
+        }
+        html.dark .theme-btn { background: rgba(255,255,255,0.1); }
+        .theme-btn .icon-sun  { display: none; }
+        .theme-btn .icon-moon { display: block; }
+        html.dark .theme-btn .icon-sun  { display: block; }
+        html.dark .theme-btn .icon-moon { display: none; }
+
         /* Container */
         .content { max-width: 480px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
 
@@ -53,7 +100,7 @@
 
         /* Service cards — selectable */
         .service-card {
-            background: #fff;
+            background: var(--bg-card);
             border-radius: 0.75rem;
             padding: 1rem 1.25rem;
             margin-bottom: 0.6rem;
@@ -80,26 +127,27 @@
             color: #fff; font-size: 0.75rem; font-weight: 700;
         }
         .service-card.selected .check { display: flex; }
-        .service-title { font-weight: 600; font-size: 0.95rem; padding-right: 1.75rem; }
-        .service-desc { font-size: 0.85rem; color: #6b7280; margin-top: 0.2rem; }
+        .service-title { font-weight: 600; font-size: 0.95rem; padding-right: 1.75rem; color: var(--text); }
+        .service-desc { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem; }
         .service-hint {
-            font-size: 0.78rem; color: #9ca3af; margin-bottom: 0.75rem;
+            font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem;
             display: flex; align-items: center; gap: 0.4rem;
         }
 
         /* Contact form */
         .contact-card {
-            background: #fff; border-radius: 0.75rem;
+            background: var(--bg-card); border-radius: 0.75rem;
             padding: 1.5rem 1.25rem; margin-top: 2rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.07);
         }
-        .contact-card h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .contact-card > p { font-size: 0.875rem; color: #6b7280; margin-bottom: 1.25rem; }
+        .contact-card h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--text); }
+        .contact-card > p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.25rem; }
         .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text); }
         .form-group input, .form-group textarea {
-            width: 100%; border: 1px solid #d1d5db; border-radius: 0.5rem;
+            width: 100%; border: 1px solid var(--border); border-radius: 0.5rem;
             padding: 0.625rem 0.75rem; font-size: 0.9rem; font-family: inherit;
+            background: var(--input-bg); color: var(--text);
         }
         .form-group input:focus, .form-group textarea:focus {
             outline: none; border-color: {{ theme.primary }};
@@ -116,13 +164,33 @@
         }
         .btn-submit:active { opacity: 0.88; }
 
+        /* Section title */
+        .section-title { color: var(--text-muted); }
+
         /* Flash */
         .flash { padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.875rem; }
         .flash-success { background: #d1fae5; color: #065f46; }
         .flash-danger  { background: #fee2e2; color: #991b1b; }
+        html.dark .flash-success { background: #052e16; color: #86efac; }
+        html.dark .flash-danger  { background: #450a0a; color: #fca5a5; }
     </style>
 </head>
 <body>
+
+    <!-- Dark mode toggle (fixed top-right) -->
+    <button class="theme-btn" id="themeToggle" aria-label="Cambiar tema">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
 
     <!-- Header -->
     <div class="profile-header">
@@ -209,6 +277,17 @@
     </div>
 
     <script>
+        // Theme toggle
+        (function () {
+            var btn = document.getElementById('themeToggle');
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    var isDark = document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                });
+            }
+        }());
+
         function selectService(card) {
             var alreadySelected = card.classList.contains('selected');
             // Deselect all

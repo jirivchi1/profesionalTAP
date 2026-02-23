@@ -25,7 +25,7 @@
             {% if current_user.professional.bio %}
             <p><strong>Bio:</strong> {{ current_user.professional.bio }}</p>
             {% endif %}
-            <a href="{{ url_for('dashboard.edit_profile') }}" class="btn btn-sm">Editar perfil</a>
+            <a href="{{ url_for('dashboard.edit_profile') }}" class="btn btn-sm" style="margin-top:0.5rem;">Editar perfil</a>
         </div>
 
         <div class="dashboard-card">
@@ -67,7 +67,7 @@
         <div class="dashboard-card">
             <h2>Perfil profesional</h2>
             <p>Aún no has creado tu perfil profesional.</p>
-            <a href="{{ url_for('dashboard.create_profile') }}" class="btn">Crear perfil</a>
+            <a href="{{ url_for('dashboard.create_profile') }}" class="btn" style="margin-top:0.5rem;">Crear perfil</a>
         </div>
         {% endif %}
 
@@ -76,18 +76,16 @@
 
         {% if landing_requests %}
         {% for req in landing_requests %}
-        <div class="dashboard-card" style="margin-bottom: 1.5rem;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+        <div class="dashboard-card">
+            <div class="qr-card-header">
                 <div>
-                    <h3 style="margin:0 0 0.25rem;">{{ req.contact_name or req.business_name }}</h3>
-                    <span style="font-size:0.85rem; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em;">
-                        {{ req.sector }}
-                    </span>
+                    <h3 style="margin:0 0 0.2rem;">{{ req.contact_name or req.business_name }}</h3>
+                    <span class="qr-card-sector">{{ req.sector }}</span>
                 </div>
                 <a href="{{ url_for('landing.public_view', slug=req.public_slug) }}"
                    target="_blank"
-                   class="btn btn-sm">
-                    Ver perfil público ↗
+                   class="btn btn-sm btn-secondary">
+                    Ver perfil ↗
                 </a>
             </div>
 
@@ -105,15 +103,15 @@
                 {% endif %}
             {% endfor %}
 
-            <div style="display:flex; gap:1.5rem; margin: 1rem 0; padding: 0.75rem 1rem; background:#f9fafb; border-radius:8px; flex-wrap:wrap;">
+            <div class="qr-stats-row">
                 <div>
-                    <span style="font-size:1.5rem; font-weight:700; color:#1f2937;">{{ total_contacts }}</span>
-                    <span style="font-size:0.85rem; color:#6b7280; display:block;">contactos totales</span>
+                    <span class="qr-stat-number">{{ total_contacts }}</span>
+                    <span class="qr-stat-label">contactos totales</span>
                 </div>
                 {% if ns.max_title %}
                 <div>
-                    <span style="font-size:1rem; font-weight:600; color:#1f2937;">{{ ns.max_title }} ({{ ns.max_count }})</span>
-                    <span style="font-size:0.85rem; color:#6b7280; display:block;">servicio más demandado</span>
+                    <span class="qr-stat-service">{{ ns.max_title }} ({{ ns.max_count }})</span>
+                    <span class="qr-stat-label">servicio más demandado</span>
                 </div>
                 {% endif %}
             </div>
@@ -135,8 +133,7 @@
                         <td>{{ contact.service.title if contact.service_id else 'Sin preferencia' }}</td>
                         <td>{{ contact.email or '—' }}</td>
                         <td>
-                            <button class="btn btn-sm"
-                                    onclick="abrirMensaje({{ contact.id }})">
+                            <button class="btn btn-sm" onclick="abrirMensaje({{ contact.id }})">
                                 Mensaje ✨
                             </button>
                         </td>
@@ -146,7 +143,7 @@
             </table>
             </div>
             {% else %}
-            <p style="margin-top:1rem; color:#6b7280;">
+            <p class="text-light" style="margin-top:0.75rem;">
                 Aún no has recibido contactos. Comparte tu QR para empezar.
             </p>
             {% endif %}
@@ -154,11 +151,11 @@
         {% endfor %}
 
         {% else %}
-        <div class="dashboard-card" style="text-align:center;">
-            <p style="color:#6b7280; margin-bottom:1rem;">
+        <div class="dashboard-card" style="text-align:center; padding: 2.5rem 1.5rem;">
+            <p class="text-light" style="margin-bottom:1rem;">
                 Aún no tienes ningún perfil QR creado.
             </p>
-            <a href="{{ url_for('landing.comenzar') }}" class="btn">Crear mi perfil QR</a>
+            <a href="{{ url_for('landing.create') }}" class="btn">Crear mi perfil QR</a>
         </div>
         {% endif %}
 
@@ -166,13 +163,11 @@
 </section>
 
 <!-- Mensaje modal -->
-<dialog id="mensajeModal" style="border:none; border-radius:12px; padding:2rem; max-width:560px; width:90%; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
-    <h3 style="margin:0 0 1rem;">Mensaje de seguimiento</h3>
-    <textarea id="mensajeTexto"
-              style="width:100%; height:220px; padding:0.75rem; border:1px solid #d1d5db; border-radius:8px; font-family:inherit; font-size:0.9rem; resize:vertical; box-sizing:border-box;"
-              readonly></textarea>
-    <div style="display:flex; gap:0.75rem; margin-top:1rem; justify-content:flex-end;">
-        <button class="btn btn-sm" onclick="copiarMensaje()" id="btnCopiar">Copiar</button>
+<dialog id="mensajeModal" class="message-modal">
+    <h3>Mensaje de seguimiento</h3>
+    <textarea id="mensajeTexto" class="message-textarea" readonly></textarea>
+    <div class="modal-actions">
+        <button class="btn btn-sm btn-secondary" onclick="copiarMensaje()" id="btnCopiar">Copiar</button>
         <button class="btn btn-sm" onclick="document.getElementById('mensajeModal').close()">Cerrar</button>
     </div>
 </dialog>

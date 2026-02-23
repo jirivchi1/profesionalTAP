@@ -4,42 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ProfesionalTAP{% endblock %}</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Apply saved theme BEFORE paint to avoid flash -->
+    <script>
+        (function () {
+            var t = localStorage.getItem('theme');
+            if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        }());
+    </script>
 </head>
 <body>
     <header class="site-header">
         <div class="container">
             <a href="{{ url_for('public.home') }}" class="logo">ProfesionalTAP</a>
-            <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainNav">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <nav id="mainNav">
-                <ul>
-                    <li><a href="{{ url_for('public.home') }}">Inicio</a></li>
-                    <li><a href="{{ url_for('public.professionals') }}">Profesionales</a></li>
-                    <li><a href="{{ url_for('public.about') }}">Sobre nosotros</a></li>
-                    <li><a href="{{ url_for('public.contact') }}">Contacto</a></li>
-                    {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('dashboard.index') }}">Mi panel</a></li>
-                    <li><a href="{{ url_for('auth.logout') }}">Salir</a></li>
-                    {% else %}
-                    <li><a href="{{ url_for('auth.login') }}">Entrar</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
+
+            <div class="header-right">
+                <nav id="mainNav">
+                    <ul>
+                        <li><a href="{{ url_for('public.home') }}">Inicio</a></li>
+                        <li><a href="{{ url_for('public.professionals') }}">Profesionales</a></li>
+                        <li><a href="{{ url_for('public.about') }}">Sobre nosotros</a></li>
+                        <li><a href="{{ url_for('public.contact') }}">Contacto</a></li>
+                        {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('dashboard.index') }}">Mi panel</a></li>
+                        <li><a href="{{ url_for('auth.logout') }}">Salir</a></li>
+                        {% else %}
+                        <li><a href="{{ url_for('landing.create') }}" class="nav-cta">Empezar gratis</a></li>
+                        <li><a href="{{ url_for('auth.login') }}">Entrar</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+
+                <div class="header-actions">
+                    <!-- Dark / light mode toggle -->
+                    <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+                        <!-- Sun: shown in dark mode -->
+                        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17"
+                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                        </svg>
+                        <!-- Moon: shown in light mode -->
+                        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17"
+                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                    </button>
+
+                    <!-- Mobile hamburger -->
+                    <button class="nav-toggle" id="navToggle"
+                            aria-label="Abrir menú" aria-expanded="false" aria-controls="mainNav">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
+
     <script>
         (function () {
-            var btn = document.getElementById('navToggle');
-            var nav = document.getElementById('mainNav');
-            if (btn && nav) {
-                btn.addEventListener('click', function () {
+            // Nav toggle
+            var navBtn = document.getElementById('navToggle');
+            var nav    = document.getElementById('mainNav');
+            if (navBtn && nav) {
+                navBtn.addEventListener('click', function () {
                     var open = nav.classList.toggle('open');
-                    btn.classList.toggle('open', open);
-                    btn.setAttribute('aria-expanded', open);
+                    navBtn.classList.toggle('open', open);
+                    navBtn.setAttribute('aria-expanded', open);
+                });
+            }
+
+            // Theme toggle
+            var themeBtn = document.getElementById('themeToggle');
+            if (themeBtn) {
+                themeBtn.addEventListener('click', function () {
+                    var isDark = document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
                 });
             }
         }());
