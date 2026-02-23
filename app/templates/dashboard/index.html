@@ -31,6 +31,7 @@
         <div class="dashboard-card">
             <h2>Mis servicios</h2>
             {% if current_user.professional.services %}
+            <div class="table-wrap">
             <table class="table">
                 <thead>
                     <tr>
@@ -55,6 +56,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% else %}
             <p>Aún no tienes servicios registrados.</p>
             {% endif %}
@@ -116,6 +118,7 @@
                 {% endif %}
             </div>
 
+            <div class="table-wrap">
             <table class="table">
                 <thead>
                     <tr>
@@ -141,6 +144,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% else %}
             <p style="margin-top:1rem; color:#6b7280;">
                 Aún no has recibido contactos. Comparte tu QR para empezar.

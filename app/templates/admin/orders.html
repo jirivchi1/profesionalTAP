@@ -27,6 +27,7 @@
         </div>
 
         {% if orders.items %}
+        <div class="table-wrap">
         <table class="table">
             <thead>
                 <tr>
@@ -63,6 +64,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
 
         <!-- Pagination -->
         {% if orders.pages > 1 %}

@@ -718,3 +718,208 @@ nav a:hover {
     color: var(--color-text-light);
     font-size: 0.875rem;
 }
+
+/* Table scroll wrapper */
+.table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ── Hamburger button ──────────────────────────────── */
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--color-text);
+}
+
+.nav-toggle span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--color-text);
+    border-radius: 2px;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Responsive — tablet / mobile (≤ 768px) ────────── */
+@media (max-width: 768px) {
+
+    /* Header */
+    .site-header .container {
+        flex-wrap: wrap;
+        gap: 0;
+    }
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    #mainNav {
+        display: none;
+        width: 100%;
+        border-top: 1px solid var(--color-border);
+    }
+
+    #mainNav.open {
+        display: block;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 0;
+        padding: 0.25rem 0;
+    }
+
+    nav ul li {
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    nav ul li:last-child {
+        border-bottom: none;
+    }
+
+    nav a {
+        display: block;
+        padding: 0.75rem 0.25rem;
+        font-size: 1rem;
+    }
+
+    .nav-cta {
+        padding: 0.5rem 0.25rem;
+        background: none;
+        color: var(--color-primary) !important;
+        border-radius: 0;
+    }
+
+    /* Hero */
+    .hero {
+        padding: 3rem 0;
+    }
+
+    .hero h1 {
+        font-size: 1.75rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    /* Page sections */
+    .page-section {
+        padding: 2rem 0;
+    }
+
+    .page-section h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Form card */
+    .form-page {
+        padding: 1.5rem 0;
+    }
+
+    .form-card {
+        padding: 1.5rem 1.25rem;
+        max-width: 100%;
+        border-radius: 0.5rem;
+    }
+
+    .form-card h1 {
+        font-size: 1.4rem;
+    }
+
+    /* Filter form */
+    .filter-form {
+        flex-direction: column;
+    }
+
+    .filter-select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* Stats grid — 2 columns on tablet */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Dashboard card */
+    .dashboard-card {
+        padding: 1.25rem 1rem;
+    }
+
+    /* Card grid — single column */
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Public URL box */
+    .public-url-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    /* Congrats & community cards */
+    .congrats-card,
+    .community-card {
+        padding: 1.75rem 1rem;
+    }
+
+    .btn-pay,
+    .btn-community {
+        font-size: 1rem;
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+/* ── Responsive — small mobile (≤ 480px) ───────────── */
+@media (max-width: 480px) {
+
+    .hero {
+        padding: 2.5rem 0;
+    }
+
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Stats — keep 2 columns */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    /* Community perks full width */
+    .community-perks {
+        max-width: 100%;
+    }
+
+    /* Form card */
+    .form-card {
+        padding: 1.25rem 1rem;
+    }
+
+    /* Actions buttons — stack if needed */
+    .actions {
+        flex-wrap: wrap;
+    }
+
+    /* Dashboard QR section heading */
+    .dashboard-card h3 {
+        font-size: 1rem;
+    }
+}

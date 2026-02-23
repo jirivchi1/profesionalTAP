@@ -10,7 +10,12 @@
     <header class="site-header">
         <div class="container">
             <a href="{{ url_for('public.home') }}" class="logo">ProfesionalTAP</a>
-            <nav>
+            <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainNav">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav id="mainNav">
                 <ul>
                     <li><a href="{{ url_for('public.home') }}">Inicio</a></li>
                     <li><a href="{{ url_for('public.professionals') }}">Profesionales</a></li>
@@ -26,6 +31,19 @@
             </nav>
         </div>
     </header>
+    <script>
+        (function () {
+            var btn = document.getElementById('navToggle');
+            var nav = document.getElementById('mainNav');
+            if (btn && nav) {
+                btn.addEventListener('click', function () {
+                    var open = nav.classList.toggle('open');
+                    btn.classList.toggle('open', open);
+                    btn.setAttribute('aria-expanded', open);
+                });
+            }
+        }());
+    </script>
 
     <main>
         {% with messages = get_flashed_messages(with_categories=true) %}
