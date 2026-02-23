@@ -1,13 +1,487 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}ProfesionalTAP - Inicio{% endblock %}
+{% block title %}ProfesionalTAP - Tu perfil digital profesional{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <div class="container">
-        <h1>Bienvenido a ProfesionalTAP</h1>
-        <p>Tu plataforma profesional de confianza.</p>
-        <a href="{{ url_for('landing.create') }}" class="btn">Comenzar</a>
+<section class="hero-split">
+    <div class="container hero-split-inner">
+
+        <!-- ── Left: heading + CTA ────────────────────── -->
+        <div class="hero-copy">
+            <h1 class="hero-heading">
+                Tu perfil profesional<br>
+                <span class="hero-heading-accent">en un QR</span>
+            </h1>
+            <p class="hero-desc">
+                Crea tu tarjeta digital en segundos. Comparte tus servicios
+                y recibe contactos de clientes potenciales con solo mostrar tu QR.
+            </p>
+            <a href="{{ url_for('landing.create') }}" class="btn hero-cta">
+                Crear mi perfil gratis →
+            </a>
+        </div>
+
+        <!-- ── Right: animated 3D card ───────────────── -->
+        <div class="hero-card-wrap">
+            <div class="orb orb-amber"></div>
+            <div class="orb orb-indigo"></div>
+
+            <div class="tap-scene" id="cardScene">
+                <div class="tap-inner" id="cardInner">
+
+                    <!-- ── FRONT ───────────────────── -->
+                    <div class="tap-face tap-front">
+                        <div class="card-shimmer"></div>
+
+                        <!-- top row -->
+                        <div class="tap-row-top">
+                            <div class="tap-chip">
+                                <div class="tap-chip-lines"></div>
+                            </div>
+                            <!-- contactless icon -->
+                            <svg class="tap-wifi" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round"
+                                 width="22" height="22" aria-hidden="true">
+                                <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                                <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                                <circle cx="12" cy="20" r="1" fill="currentColor"/>
+                            </svg>
+                        </div>
+
+                        <!-- middle: sector + name -->
+                        <div class="tap-middle">
+                            <div class="tap-sector">ABOGADA · PROFESIONALTAP</div>
+                            <div class="tap-name">María García López</div>
+                        </div>
+
+                        <!-- bottom: contact + brand -->
+                        <div class="tap-row-bottom">
+                            <div class="tap-contact-pair">
+                                <span class="tap-label">TELÉFONO</span>
+                                <span class="tap-value">+34 612 345 678</span>
+                            </div>
+                            <div class="tap-contact-pair">
+                                <span class="tap-label">EMAIL</span>
+                                <span class="tap-value">maria@despacho.es</span>
+                            </div>
+                            <div class="tap-brand">TAP</div>
+                        </div>
+                    </div>
+
+                    <!-- ── BACK ────────────────────── -->
+                    <div class="tap-face tap-back">
+                        <div class="card-shimmer"></div>
+                        <div class="tap-magstrip"></div>
+
+                        <div class="tap-services-wrap">
+                            <div class="tap-services-title">SERVICIOS</div>
+                            <ul class="tap-services-list">
+                                <li>Consultoría legal empresarial</li>
+                                <li>Redacción de contratos</li>
+                                <li>Defensa en juicio</li>
+                            </ul>
+                        </div>
+
+                        <div class="tap-back-watermark">ProfesionalTAP</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <p class="card-hint" id="cardHint">
+                <span class="hint-icon">↩</span> Toca para ver los servicios
+            </p>
+        </div>
     </div>
 </section>
+
+<style>
+/* ── Hero layout ─────────────────────────────────── */
+.hero-split {
+    padding: 5rem 0 4rem;
+    background: var(--color-bg-alt);
+    border-bottom: 1px solid var(--color-border);
+    overflow: hidden;
+}
+
+.hero-split-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+/* ── Hero copy ───────────────────────────────────── */
+.hero-copy { z-index: 1; }
+
+.hero-heading {
+    font-size: 2.75rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
+    color: var(--color-text);
+}
+
+.hero-heading-accent { color: var(--color-primary); }
+
+.hero-desc {
+    color: var(--color-text-light);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    max-width: 400px;
+}
+
+.hero-cta {
+    font-size: 0.95rem;
+    padding: 0.75rem 1.75rem;
+}
+
+/* ── Card wrapper + orbs ─────────────────────────── */
+.hero-card-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(55px);
+    pointer-events: none;
+    z-index: 0;
+    animation: orbFloat 9s ease-in-out infinite;
+}
+
+.orb-amber {
+    width: 220px; height: 220px;
+    background: rgba(245, 158, 11, 0.18);
+    top: -60px; right: -30px;
+}
+
+.orb-indigo {
+    width: 180px; height: 180px;
+    background: rgba(99, 102, 241, 0.14);
+    bottom: -50px; left: -20px;
+    animation-direction: reverse;
+    animation-duration: 11s;
+}
+
+@keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0); }
+    50%       { transform: translate(18px, -14px); }
+}
+
+/* ── 3D scene ────────────────────────────────────── */
+.tap-scene {
+    width: 380px;
+    height: 224px;
+    perspective: 1000px;
+    cursor: pointer;
+    z-index: 1;
+    animation: cardEntrance 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes cardEntrance {
+    from { opacity: 0; transform: translateY(24px) scale(0.92); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.tap-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(0deg) rotateY(0deg);
+    will-change: transform;
+}
+
+/* ── Card face (shared) ──────────────────────────── */
+.tap-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+    padding: 1.5rem;
+    color: #fff;
+    /* Dark navy gradient — looks great in light and dark mode */
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 45%, #0f3460 100%);
+    box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.28),
+        0 8px 20px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* back face starts rotated 180deg so it's hidden initially */
+.tap-back { transform: rotateY(180deg); }
+
+/* ── Shimmer sweep ───────────────────────────────── */
+.card-shimmer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        108deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.11) 50%,
+        transparent 70%
+    );
+    background-size: 260% 100%;
+    animation: shimmerSweep 4s linear infinite 1.5s;
+}
+
+@keyframes shimmerSweep {
+    0%   { background-position: 260% 0; }
+    100% { background-position: -260% 0; }
+}
+
+/* ── Front: top row ──────────────────────────────── */
+.tap-row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.1rem;
+}
+
+.tap-chip {
+    width: 42px;
+    height: 30px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 60%, #b45309 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.tap-chip-lines {
+    width: 78%;
+    height: 62%;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 2px;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.12) 3px,
+        rgba(0,0,0,0.12) 4px
+    );
+}
+
+.tap-wifi { opacity: 0.65; }
+
+/* ── Front: middle ───────────────────────────────── */
+.tap-middle { margin-bottom: 0.9rem; }
+
+.tap-sector {
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 0.3rem;
+}
+
+.tap-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* ── Front: bottom row ───────────────────────────── */
+.tap-row-bottom {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.1rem;
+}
+
+.tap-contact-pair { flex: 1; min-width: 0; }
+
+.tap-label {
+    display: block;
+    font-size: 0.57rem;
+    letter-spacing: 0.1em;
+    opacity: 0.55;
+    margin-bottom: 0.15rem;
+    text-transform: uppercase;
+}
+
+.tap-value {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tap-brand {
+    font-size: 1.5rem;
+    font-weight: 900;
+    font-style: italic;
+    color: #f59e0b;
+    letter-spacing: -0.04em;
+    flex-shrink: 0;
+    text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+}
+
+/* ── Back: magnetic strip ────────────────────────── */
+.tap-magstrip {
+    position: absolute;
+    top: 2rem;
+    left: 0;
+    right: 0;
+    height: 42px;
+    background: rgba(0, 0, 0, 0.78);
+}
+
+/* ── Back: services ──────────────────────────────── */
+.tap-services-wrap {
+    position: absolute;
+    top: 5.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
+}
+
+.tap-services-title {
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    opacity: 0.55;
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+}
+
+.tap-services-list {
+    list-style: none;
+}
+
+.tap-services-list li {
+    font-size: 0.82rem;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.tap-services-list li:last-child { border-bottom: none; }
+
+.tap-services-list li::before {
+    content: '✓';
+    color: #f59e0b;
+    font-weight: 700;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+}
+
+/* ── Back: watermark ─────────────────────────────── */
+.tap-back-watermark {
+    position: absolute;
+    bottom: 1.1rem;
+    right: 1.5rem;
+    font-size: 0.65rem;
+    opacity: 0.3;
+    letter-spacing: 0.08em;
+}
+
+/* ── Hint text ───────────────────────────────────── */
+.card-hint {
+    margin-top: 1.25rem;
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    text-align: center;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    justify-content: center;
+}
+
+.hint-icon {
+    display: inline-block;
+    animation: hintBounce 1.8s ease-in-out infinite;
+}
+
+@keyframes hintBounce {
+    0%, 100% { transform: rotate(0deg); }
+    50%       { transform: rotate(-15deg) scale(1.1); }
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 900px) {
+    .hero-split { padding: 3.5rem 0 3rem; }
+    .hero-split-inner {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        text-align: center;
+    }
+    .hero-desc { margin-left: auto; margin-right: auto; }
+    .tap-scene { width: 340px; height: 201px; }
+}
+
+@media (max-width: 480px) {
+    .hero-heading { font-size: 2rem; }
+    .tap-scene { width: 300px; height: 178px; }
+    .tap-name { font-size: 0.92rem; }
+    .tap-brand { font-size: 1.2rem; }
+}
+</style>
+
+<script>
+(function () {
+    var scene  = document.getElementById('cardScene');
+    var inner  = document.getElementById('cardInner');
+    var hint   = document.getElementById('cardHint');
+    if (!scene || !inner) return;
+
+    var isFlipped  = false;
+    var isTilting  = false;
+
+    /* spring-like cubic-bezier (overshoots slightly, like Framer Motion spring) */
+    var SPRING = 'transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    var FAST   = 'transform 0.08s linear';
+
+    function setTransform(rotX, rotY) {
+        if (isFlipped) {
+            inner.style.transform = 'rotateY(180deg)';
+        } else {
+            inner.style.transform =
+                'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+        }
+    }
+
+    /* ── Mouse tilt ───────────────────────────────── */
+    scene.addEventListener('mousemove', function (e) {
+        if (isFlipped) return;
+        var rect = scene.getBoundingClientRect();
+        var dx = (e.clientX - (rect.left + rect.width  / 2)) / (rect.width  / 2);
+        var dy = (e.clientY - (rect.top  + rect.height / 2)) / (rect.height / 2);
+        inner.style.transition = FAST;
+        inner.style.transform  =
+            'rotateX(' + (-dy * 11) + 'deg) rotateY(' + (dx * 11) + 'deg)';
+    });
+
+    scene.addEventListener('mouseleave', function () {
+        inner.style.transition = SPRING;
+        setTransform(0, 0);
+    });
+
+    /* ── Click / tap flip ─────────────────────────── */
+    scene.addEventListener('click', function () {
+        isFlipped = !isFlipped;
+        inner.style.transition = SPRING;
+        setTransform(0, 0);
+        if (hint) {
+            hint.innerHTML = isFlipped
+                ? '<span class="hint-icon">↩</span> Toca para ver el contacto'
+                : '<span class="hint-icon">↩</span> Toca para ver los servicios';
+        }
+    });
+}());
+</script>
 {% endblock %}
