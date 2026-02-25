@@ -578,18 +578,18 @@
         var AGENDA = {{ agenda_json | safe }};
         var calYear, calMonth, selectedDate;
 
+        var MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                           'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+        var DAY_NAMES   = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+        var MON_NAMES   = ['enero','febrero','marzo','abril','mayo','junio',
+                           'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
         (function init() {
             var now = new Date();
             calYear  = now.getFullYear();
             calMonth = now.getMonth();
             renderCalendar();
         })();
-
-        var MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-                           'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-        var DAY_NAMES   = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
-        var MON_NAMES   = ['enero','febrero','marzo','abril','mayo','junio',
-                           'julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
         function renderCalendar() {
             var cal   = document.getElementById('calGrid');
