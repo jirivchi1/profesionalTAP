@@ -1,10 +1,14 @@
+import json
+from datetime import date, timedelta
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.forms.landing import LandingForm, ContactForm
+from app.forms.appointment import AppointmentForm
 from app.models.landing import LandingRequest
 from app.models.landing_service import LandingService
 from app.models.contact import Contact
+from app.models.appointment import Appointment
 from app.services.landing_service import generate_qr, build_prompt
 
 landing = Blueprint('landing', __name__)
@@ -48,6 +52,33 @@ SECTOR_THEMES = {
         'community_desc': 'Conecta con consultores y asesores, comparte metodologías y amplía tu red de clientes.',
     },
 }
+
+
+def _build_agenda_json(req):
+    """Build JSON with availability for the calendar. Returns None if no agenda configured."""
+    if not req.availability:
+        return None
+
+    av0 = req.availability[0]
+    weekdays = [av.day_of_week for av in req.availability]
+
+    today = date.today()
+    future = today + timedelta(days=90)
+    booked = {}
+    for appt in req.appointments:
+        if today <= appt.date <= future:
+            key = appt.date.isoformat()
+            if key not in booked:
+                booked[key] = []
+            booked[key].append(appt.time)
+
+    return json.dumps({
+        'weekdays': weekdays,
+        'start': av0.start_time,
+        'end': av0.end_time,
+        'slot_minutes': av0.slot_minutes,
+        'booked': booked,
+    })
 
 
 @landing.route('/comenzar', methods=['GET', 'POST'])
@@ -142,7 +173,11 @@ def public_view(slug):
     theme = SECTOR_THEMES.get(req.sector, SECTOR_THEMES['abogatap'])
     form = ContactForm()
     form.service_id.choices = _service_choices(req)
-    return render_template('landing/public_placeholder.html', req=req, theme=theme, form=form)
+    appt_form = AppointmentForm()
+    agenda_json = _build_agenda_json(req)
+    return render_template('landing/public_placeholder.html',
+                           req=req, theme=theme, form=form,
+                           appt_form=appt_form, agenda_json=agenda_json)
 
 
 @landing.route('/p/<slug>/contactar', methods=['POST'])
@@ -153,7 +188,6 @@ def contact(slug):
     form.service_id.choices = _service_choices(req)
     if form.validate_on_submit():
         selected_service_id = form.service_id.data if form.service_id.data else None
-        # 0 means "sin preferencia"
         if selected_service_id == 0:
             selected_service_id = None
         c = Contact(
@@ -169,4 +203,61 @@ def contact(slug):
         flash('¡Gracias! Tus datos han sido enviados correctamente.', 'success')
     else:
         flash('Por favor, completa al menos tu nombre.', 'danger')
+    return redirect(url_for('landing.public_view', slug=slug))
+
+
+@landing.route('/p/<slug>/cita', methods=['POST'])
+def book_appointment(slug):
+    """Book an appointment on a public profile."""
+    req = LandingRequest.query.filter_by(public_slug=slug).first_or_404()
+    appt_form = AppointmentForm()
+
+    if not appt_form.validate_on_submit():
+        flash('Por favor, completa nombre, fecha y hora.', 'danger')
+        return redirect(url_for('landing.public_view', slug=slug) + '#pide-cita')
+
+    appt_date_str = appt_form.appt_date.data
+    appt_time = appt_form.appt_time.data
+
+    try:
+        appt_date = date.fromisoformat(appt_date_str)
+    except (ValueError, TypeError):
+        flash('Fecha no válida.', 'danger')
+        return redirect(url_for('landing.public_view', slug=slug) + '#pide-cita')
+
+    if appt_date < date.today():
+        flash('No puedes reservar una cita en el pasado.', 'danger')
+        return redirect(url_for('landing.public_view', slug=slug) + '#pide-cita')
+
+    # Prevent double-booking the same slot
+    existing = Appointment.query.filter_by(
+        landing_request_id=req.id,
+        date=appt_date,
+        time=appt_time,
+    ).first()
+    if existing:
+        flash('Ese horario ya no está disponible. Por favor elige otro.', 'danger')
+        return redirect(url_for('landing.public_view', slug=slug) + '#pide-cita')
+
+    service_id = appt_form.service_id.data
+    try:
+        service_id = int(service_id) if service_id else None
+    except ValueError:
+        service_id = None
+    if service_id == 0:
+        service_id = None
+
+    appt = Appointment(
+        landing_request_id=req.id,
+        service_id=service_id,
+        name=appt_form.name.data,
+        email=appt_form.email.data or None,
+        phone=appt_form.phone.data or None,
+        date=appt_date,
+        time=appt_time,
+        message=appt_form.message.data or None,
+    )
+    db.session.add(appt)
+    db.session.commit()
+    flash('¡Cita reservada! Te confirmaremos lo antes posible.', 'success')
     return redirect(url_for('landing.public_view', slug=slug))

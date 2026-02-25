@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, date
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
@@ -9,8 +9,18 @@ from app.models.service import Service
 from app.models.landing import LandingRequest
 from app.models.landing_service import LandingService
 from app.models.contact import Contact
+from app.models.availability import Availability
+from app.models.appointment import Appointment
 
 dashboard = Blueprint('dashboard', __name__)
+
+DAYS_ES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+
+STATUS_LABELS = {
+    'pending':   ('Pendiente',   'badge-pending'),
+    'confirmed': ('Confirmada',  'badge-success'),
+    'cancelled': ('Cancelada',   'badge-danger'),
+}
 
 
 def _generar_mensaje(req, contact, service_name):
@@ -55,6 +65,7 @@ def index():
 
     req_ids = [r.id for r in landing_requests]
     twelve_months_ago = datetime.now(timezone.utc) - timedelta(days=365)
+    today = date.today()
 
     if req_ids:
         contacts_12m = Contact.query.filter(
@@ -71,9 +82,19 @@ def index():
             .filter(Contact.request_id.in_(req_ids))
             .order_by(Contact.created_at.desc())
             .limit(20).all())
+        upcoming_appointments = (Appointment.query
+            .filter(Appointment.landing_request_id.in_(req_ids))
+            .filter(Appointment.date >= today)
+            .order_by(Appointment.date, Appointment.time)
+            .limit(20).all())
+        appointments_total = Appointment.query.filter(
+            Appointment.landing_request_id.in_(req_ids)
+        ).count()
     else:
         contacts_12m = contacts_total = services_count = 0
         recent_contacts = []
+        upcoming_appointments = []
+        appointments_total = 0
 
     completion_pct, completion_steps = _calc_completion(landing_requests)
 
@@ -84,8 +105,11 @@ def index():
         qr_count=len(landing_requests),
         services_count=services_count,
         recent_contacts=recent_contacts,
+        upcoming_appointments=upcoming_appointments,
+        appointments_total=appointments_total,
         completion_pct=completion_pct,
         completion_steps=completion_steps,
+        status_labels=STATUS_LABELS,
     )
 
 
@@ -100,7 +124,76 @@ def mensaje(contact_id):
     return jsonify({'message': _generar_mensaje(req, contact, service_name)})
 
 
-# --- Professional profile ---
+# ── Agenda (availability config per QR profile) ──────────────────────────────
+
+@dashboard.route('/dashboard/citas/<int:req_id>/agenda', methods=['GET', 'POST'])
+@login_required
+def agenda(req_id):
+    req = LandingRequest.query.filter_by(id=req_id, user_id=current_user.id).first_or_404()
+
+    if request.method == 'POST':
+        Availability.query.filter_by(landing_request_id=req.id).delete()
+        selected_days = request.form.getlist('days')
+        start_time = request.form.get('start_time', '09:00')
+        end_time = request.form.get('end_time', '18:00')
+        slot_minutes = request.form.get('slot_minutes', 60, type=int)
+
+        for day_str in selected_days:
+            try:
+                day = int(day_str)
+            except ValueError:
+                continue
+            db.session.add(Availability(
+                landing_request_id=req.id,
+                day_of_week=day,
+                start_time=start_time,
+                end_time=end_time,
+                slot_minutes=slot_minutes,
+            ))
+
+        db.session.commit()
+        flash('Agenda actualizada correctamente.', 'success')
+        return redirect(url_for('dashboard.agenda', req_id=req_id))
+
+    current_days = {av.day_of_week for av in req.availability}
+    start_time  = req.availability[0].start_time  if req.availability else '09:00'
+    end_time    = req.availability[0].end_time    if req.availability else '18:00'
+    slot_minutes = req.availability[0].slot_minutes if req.availability else 60
+
+    upcoming = (Appointment.query
+        .filter_by(landing_request_id=req.id)
+        .filter(Appointment.date >= date.today())
+        .order_by(Appointment.date, Appointment.time)
+        .all())
+
+    return render_template('dashboard/agenda.html',
+        req=req,
+        DAYS=DAYS_ES,
+        current_days=current_days,
+        start_time=start_time,
+        end_time=end_time,
+        slot_minutes=slot_minutes,
+        upcoming=upcoming,
+        status_labels=STATUS_LABELS,
+    )
+
+
+@dashboard.route('/dashboard/citas/<int:appt_id>/estado', methods=['POST'])
+@login_required
+def appointment_status(appt_id):
+    appt = db.session.get(Appointment, appt_id)
+    if not appt or appt.request.user_id != current_user.id:
+        abort(403)
+    new_status = request.form.get('status')
+    if new_status in ('pending', 'confirmed', 'cancelled'):
+        appt.status = new_status
+        db.session.commit()
+    # Return to wherever came from
+    next_url = request.form.get('next') or url_for('dashboard.index') + '#citas'
+    return redirect(next_url)
+
+
+# ── Professional profile ──────────────────────────────────────────────────────
 
 @dashboard.route('/perfil/crear', methods=['GET', 'POST'])
 @login_required
@@ -142,7 +235,7 @@ def edit_profile():
     return render_template('dashboard/profile_form.html', form=form, title='Editar perfil profesional')
 
 
-# --- Services CRUD ---
+# ── Services CRUD ─────────────────────────────────────────────────────────────
 
 @dashboard.route('/servicios/crear', methods=['GET', 'POST'])
 @login_required

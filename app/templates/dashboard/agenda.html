@@ -1,0 +1,149 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Agenda — {{ req.contact_name or req.business_name }}{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container" style="max-width:780px;">
+
+        <a href="{{ url_for('dashboard.index') }}#perfiles-qr" class="back-link">&larr; Volver al panel</a>
+
+        <div class="dashboard-card" style="margin-bottom:1.5rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+                <div>
+                    <h2 style="margin-bottom:0.15rem;">Configurar agenda</h2>
+                    <p style="margin:0;font-size:0.875rem;color:var(--color-text-light);">
+                        {{ req.contact_name or req.business_name }} &middot;
+                        <span style="text-transform:uppercase;font-size:0.75rem;letter-spacing:.06em;">{{ req.sector }}</span>
+                    </p>
+                </div>
+                <a href="{{ url_for('landing.public_view', slug=req.public_slug) }}" target="_blank"
+                   class="btn btn-sm btn-secondary">Ver perfil QR ↗</a>
+            </div>
+        </div>
+
+        <!-- Availability form -->
+        <div class="dashboard-card">
+            <h3 style="margin-bottom:1rem;">Días y horario disponible</h3>
+            <form method="POST">
+                {{ csrf_token() }}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <!-- Days of week -->
+                <div class="form-group">
+                    <label style="margin-bottom:.6rem;display:block;">Días disponibles</label>
+                    <div class="agenda-days-grid">
+                        {% for day in DAYS %}
+                        {% set i = loop.index0 %}
+                        <label class="agenda-day-label {% if i in current_days %}checked{% endif %}">
+                            <input type="checkbox" name="days" value="{{ i }}"
+                                   {% if i in current_days %}checked{% endif %}>
+                            <span class="agenda-day-name">{{ day[:2] }}</span>
+                            <span class="agenda-day-full">{{ day }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Time range + slot -->
+                <div class="agenda-time-row">
+                    <div class="form-group" style="flex:1;min-width:110px;">
+                        <label for="start_time">Desde</label>
+                        <input type="time" id="start_time" name="start_time"
+                               value="{{ start_time }}" class="form-control" required>
+                    </div>
+                    <div class="form-group" style="flex:1;min-width:110px;">
+                        <label for="end_time">Hasta</label>
+                        <input type="time" id="end_time" name="end_time"
+                               value="{{ end_time }}" class="form-control" required>
+                    </div>
+                    <div class="form-group" style="flex:1;min-width:140px;">
+                        <label for="slot_minutes">Duración cita</label>
+                        <select id="slot_minutes" name="slot_minutes" class="form-control">
+                            <option value="30"  {% if slot_minutes == 30  %}selected{% endif %}>30 min</option>
+                            <option value="45"  {% if slot_minutes == 45  %}selected{% endif %}>45 min</option>
+                            <option value="60"  {% if slot_minutes == 60  %}selected{% endif %}>1 hora</option>
+                            <option value="90"  {% if slot_minutes == 90  %}selected{% endif %}>1h 30 min</option>
+                            <option value="120" {% if slot_minutes == 120 %}selected{% endif %}>2 horas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Guardar agenda</button>
+            </form>
+        </div>
+
+        <!-- Upcoming appointments -->
+        <div class="dashboard-card" style="padding:0;overflow:hidden;">
+            <div style="padding:1.25rem 1.5rem 1rem;border-bottom:1px solid var(--color-border);">
+                <h3 style="margin:0;">Próximas citas</h3>
+            </div>
+
+            {% if upcoming %}
+            <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Nombre</th>
+                        <th>Contacto</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for appt in upcoming %}
+                {% set lbl, cls = status_labels.get(appt.status, ('—', 'badge-pending')) %}
+                <tr>
+                    <td style="font-weight:600;white-space:nowrap;">
+                        {{ appt.date.strftime('%d/%m/%Y') }}
+                    </td>
+                    <td style="font-weight:600;">{{ appt.time }}</td>
+                    <td>{{ appt.name }}</td>
+                    <td class="text-light-cell">
+                        {% if appt.phone %}<div>{{ appt.phone }}</div>{% endif %}
+                        {% if appt.email %}<div>{{ appt.email }}</div>{% endif %}
+                    </td>
+                    <td><span class="badge {{ cls }}">{{ lbl }}</span></td>
+                    <td>
+                        <div class="actions">
+                            {% if appt.status != 'confirmed' %}
+                            <form method="POST"
+                                  action="{{ url_for('dashboard.appointment_status', appt_id=appt.id) }}"
+                                  class="inline-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="status" value="confirmed">
+                                <input type="hidden" name="next"
+                                       value="{{ url_for('dashboard.agenda', req_id=req.id) }}">
+                                <button type="submit" class="btn btn-sm">Confirmar</button>
+                            </form>
+                            {% endif %}
+                            {% if appt.status != 'cancelled' %}
+                            <form method="POST"
+                                  action="{{ url_for('dashboard.appointment_status', appt_id=appt.id) }}"
+                                  class="inline-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="status" value="cancelled">
+                                <input type="hidden" name="next"
+                                       value="{{ url_for('dashboard.agenda', req_id=req.id) }}">
+                                <button type="submit" class="btn btn-sm btn-danger">Cancelar</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% else %}
+            <div class="dash-empty-state" style="border:none;border-radius:0;">
+                <p>No hay citas próximas para este perfil.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+{% endblock %}

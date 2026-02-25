@@ -17,6 +17,13 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
                 Mis Perfiles QR
             </a>
+            <a href="#citas" class="dash-nav-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Mis Citas
+                {% if appointments_total > 0 %}
+                <span class="dash-nav-badge">{{ appointments_total }}</span>
+                {% endif %}
+            </a>
             <a href="#solicitudes" class="dash-nav-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 Mis Solicitudes
@@ -121,11 +128,11 @@
             </div>
             <div class="stat-card">
                 <div class="stat-card-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 </div>
-                <div class="stat-card-number">{{ services_count }}</div>
-                <div class="stat-card-label">Servicios publicados</div>
-                <div class="stat-card-period">en todos tus perfiles</div>
+                <div class="stat-card-number">{{ appointments_total }}</div>
+                <div class="stat-card-label">Citas recibidas</div>
+                <div class="stat-card-period">en total</div>
             </div>
         </div>
 
@@ -157,6 +164,10 @@
                             <span class="qp-stat-lbl">contactos</span>
                         </div>
                         <div class="qp-stat">
+                            <span class="qp-stat-num">{{ req.appointments | length }}</span>
+                            <span class="qp-stat-lbl">citas</span>
+                        </div>
+                        <div class="qp-stat">
                             <span class="qp-stat-num">{{ req.services | length }}</span>
                             <span class="qp-stat-lbl">servicios</span>
                         </div>
@@ -167,6 +178,22 @@
                             </span>
                         </div>
                     </div>
+
+                    <!-- Agenda button -->
+                    <div style="margin-top:0.875rem;padding-top:0.875rem;border-top:1px solid var(--color-border);">
+                        <a href="{{ url_for('dashboard.agenda', req_id=req.id) }}"
+                           class="btn btn-sm btn-secondary" style="width:100%;text-align:center;display:block;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                 style="display:inline;vertical-align:middle;margin-right:.3rem;">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            {% if req.availability %}Gestionar agenda{% else %}Configurar agenda{% endif %}
+                        </a>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -176,6 +203,83 @@
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-light);margin-bottom:1rem;"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/></svg>
                 <p>Aún no tienes ningún perfil QR creado.</p>
                 <a href="{{ url_for('landing.create') }}" class="btn" style="margin-top:1rem;">Crear mi perfil QR</a>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- ── Mis Citas ──────────────────────────────── -->
+        <section id="citas" style="margin-top: 2rem;">
+            <div class="dash-section-header">
+                <h2 class="dash-section-title">Mis Citas</h2>
+                {% if appointments_total > 0 %}
+                <span class="dash-section-badge">{{ appointments_total }} en total</span>
+                {% endif %}
+            </div>
+
+            {% if upcoming_appointments %}
+            <div class="dashboard-card" style="padding:0; overflow:hidden;">
+                <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Nombre</th>
+                            <th>Perfil QR</th>
+                            <th>Contacto</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appt in upcoming_appointments %}
+                        {% set lbl, cls = status_labels.get(appt.status, ('—', 'badge-pending')) %}
+                        <tr>
+                            <td style="font-weight:600;white-space:nowrap;">
+                                {{ appt.date.strftime('%d/%m/%Y') }}
+                            </td>
+                            <td style="font-weight:600;">{{ appt.time }}</td>
+                            <td><span class="contact-name-cell">{{ appt.name }}</span></td>
+                            <td class="text-light-cell">
+                                {{ appt.request.contact_name or appt.request.business_name }}
+                            </td>
+                            <td class="text-light-cell">
+                                {% if appt.phone %}<div>{{ appt.phone }}</div>{% endif %}
+                                {% if appt.email %}<div>{{ appt.email }}</div>{% endif %}
+                            </td>
+                            <td><span class="badge {{ cls }}">{{ lbl }}</span></td>
+                            <td>
+                                <div class="actions">
+                                    {% if appt.status != 'confirmed' %}
+                                    <form method="POST"
+                                          action="{{ url_for('dashboard.appointment_status', appt_id=appt.id) }}"
+                                          class="inline-form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="status" value="confirmed">
+                                        <button type="submit" class="btn btn-sm">Confirmar</button>
+                                    </form>
+                                    {% endif %}
+                                    {% if appt.status != 'cancelled' %}
+                                    <form method="POST"
+                                          action="{{ url_for('dashboard.appointment_status', appt_id=appt.id) }}"
+                                          class="inline-form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="status" value="cancelled">
+                                        <button type="submit" class="btn btn-sm btn-danger">Cancelar</button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="dash-empty-state">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-light);margin-bottom:1rem;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <p>Aún no tienes citas. Configura tu agenda en cada perfil QR para empezar a recibir citas.</p>
             </div>
             {% endif %}
         </section>
@@ -270,7 +374,7 @@ function copiarMensaje() {
 }
 // Highlight active nav link based on scroll position
 (function () {
-    const sections = ['resumen', 'perfiles-qr', 'solicitudes'];
+    const sections = ['resumen', 'perfiles-qr', 'citas', 'solicitudes'];
     const links = document.querySelectorAll('.dash-nav-item[href^="#"]');
     function onScroll() {
         let current = 'resumen';

@@ -33,6 +33,9 @@ class LandingRequest(db.Model):
     services = db.relationship('LandingService', backref='request', lazy=True,
                                order_by='LandingService.order')
     contacts = db.relationship('Contact', backref='request', lazy=True)
+    availability = db.relationship('Availability', backref='request', lazy=True,
+                                   order_by='Availability.day_of_week')
+    appointments = db.relationship('Appointment', backref='request', lazy=True)
 
     @property
     def is_b2b(self):

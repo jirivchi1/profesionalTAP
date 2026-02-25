@@ -26,6 +26,7 @@
             --text-muted:#6b7280;
             --border:    #e5e7eb;
             --input-bg:  #ffffff;
+            --primary:   {{ theme.primary }};
         }
         html.dark {
             --bg-page:   #171717;
@@ -44,9 +45,9 @@
             transition: background 0.2s, color 0.2s;
         }
 
-        /* Header */
+        /* ── Header ── */
         .profile-header {
-            background: {{ theme.primary }};
+            background: var(--primary);
             color: #fff;
             padding: 2.5rem 1.5rem 2rem;
             text-align: center;
@@ -72,7 +73,7 @@
             font-size: 0.82rem;
         }
 
-        /* Theme toggle */
+        /* ── Theme toggle ── */
         .theme-btn {
             position: fixed; top: 0.75rem; right: 0.75rem;
             background: rgba(255,255,255,0.15); backdrop-filter: blur(4px);
@@ -88,17 +89,16 @@
         html.dark .theme-btn .icon-sun  { display: block; }
         html.dark .theme-btn .icon-moon { display: none; }
 
-        /* Container */
+        /* ── Content wrapper ── */
         .content { max-width: 480px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
 
-        /* Section label */
         .section-title {
             font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
-            text-transform: uppercase; color: #9ca3af;
+            text-transform: uppercase; color: var(--text-muted);
             margin: 1.75rem 0 0.6rem;
         }
 
-        /* Service cards — selectable */
+        /* ── Service cards ── */
         .service-card {
             background: var(--bg-card);
             border-radius: 0.75rem;
@@ -106,7 +106,7 @@
             margin-bottom: 0.6rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.07);
             border: 2px solid transparent;
-            border-left: 4px solid {{ theme.primary }};
+            border-left: 4px solid var(--primary);
             cursor: pointer;
             user-select: none;
             -webkit-user-select: none;
@@ -115,14 +115,14 @@
         }
         .service-card:active { transform: scale(0.99); }
         .service-card.selected {
-            border-color: {{ theme.primary }};
-            background: {{ theme.primary }}0f;
-            box-shadow: 0 0 0 2px {{ theme.primary }}40;
+            border-color: var(--primary);
+            background: color-mix(in srgb, var(--primary) 8%, transparent);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 30%, transparent);
         }
         .service-card .check {
             position: absolute; top: 0.75rem; right: 0.9rem;
             width: 22px; height: 22px; border-radius: 50%;
-            background: {{ theme.primary }};
+            background: var(--primary);
             display: none; align-items: center; justify-content: center;
             color: #fff; font-size: 0.75rem; font-weight: 700;
         }
@@ -134,7 +134,193 @@
             display: flex; align-items: center; gap: 0.4rem;
         }
 
-        /* Contact form */
+        /* ── PIDE CITA section ── */
+        .cita-section {
+            background: var(--bg-card);
+            border-radius: 0.75rem;
+            padding: 1.5rem 1.25rem;
+            margin-top: 1.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+        }
+        .cita-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: var(--primary);
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.7rem;
+            border-radius: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .cita-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            color: var(--text);
+        }
+        .cita-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── Calendar ── */
+        .cal-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .cal-nav-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            padding: 0.3rem 0.75rem;
+            cursor: pointer;
+            color: var(--text);
+            font-size: 1rem;
+            line-height: 1;
+            transition: background 0.1s;
+        }
+        .cal-nav-btn:hover { background: var(--bg-page); }
+        .cal-month-label {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+        .cal-day-header {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 0.3rem 0;
+        }
+        .cal-day {
+            padding: 0.5rem 0;
+            font-size: 0.875rem;
+            border-radius: 0.35rem;
+            cursor: default;
+            line-height: 1;
+            transition: background 0.1s, color 0.1s;
+            position: relative;
+        }
+        .cal-day.empty { }
+        .cal-day.past, .cal-day.unavailable {
+            color: var(--text-muted);
+            opacity: 0.45;
+        }
+        .cal-day.available {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .cal-day.available:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        .cal-day.fully-booked {
+            background: #fee2e2;
+            color: #ef4444;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        html.dark .cal-day.fully-booked { background: #450a0a; color: #f87171; }
+        .cal-day.today::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+        .cal-day.available.today { outline: 2px solid var(--primary); outline-offset: -2px; }
+        .cal-day.selected {
+            background: var(--primary) !important;
+            color: #fff !important;
+            font-weight: 700;
+        }
+
+        /* ── Time slots ── */
+        .slots-section {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+        .slots-date-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+        }
+        .slot-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+        }
+        .slot-btn {
+            padding: 0.4rem 0.875rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+            transition: background 0.1s, color 0.1s;
+        }
+        .slot-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: #fff;
+        }
+        .slot-btn.selected {
+            background: var(--primary);
+            color: #fff;
+        }
+        .slot-btn.booked {
+            border-color: var(--border);
+            color: var(--text-muted);
+            opacity: 0.5;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        /* ── Booking mini-form ── */
+        .booking-form-wrap {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+        .booking-summary {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: color-mix(in srgb, var(--primary) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+            border-radius: 0.5rem;
+            padding: 0.6rem 0.875rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 1.1rem;
+        }
+
+        /* ── Contact form (shared styles) ── */
         .contact-card {
             background: var(--bg-card); border-radius: 0.75rem;
             padding: 1.5rem 1.25rem; margin-top: 2rem;
@@ -150,22 +336,20 @@
             background: var(--input-bg); color: var(--text);
         }
         .form-group input:focus, .form-group textarea:focus {
-            outline: none; border-color: {{ theme.primary }};
-            box-shadow: 0 0 0 2px {{ theme.primary }}30;
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 25%, transparent);
         }
         .form-group textarea { resize: vertical; min-height: 70px; }
         .form-error { color: #dc2626; font-size: 0.8rem; display: block; margin-top: 0.25rem; }
         .btn-submit {
             width: 100%; padding: 0.75rem;
-            background: {{ theme.primary }}; color: #fff;
+            background: var(--primary); color: #fff;
             border: none; border-radius: 0.5rem;
             font-size: 1rem; font-weight: 600; cursor: pointer;
-            margin-top: 0.5rem;
+            margin-top: 0.5rem; font-family: inherit;
+            transition: opacity 0.15s;
         }
-        .btn-submit:active { opacity: 0.88; }
-
-        /* Section title */
-        .section-title { color: var(--text-muted); }
+        .btn-submit:hover { opacity: 0.88; }
 
         /* Flash */
         .flash { padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.875rem; }
@@ -192,7 +376,7 @@
         </svg>
     </button>
 
-    <!-- Header -->
+    <!-- Profile header -->
     <div class="profile-header">
         <div class="profile-avatar">{{ theme.icon }}</div>
         <div class="profile-name">{{ req.contact_name }}</div>
@@ -237,14 +421,97 @@
         {% endfor %}
         {% endif %}
 
-        <!-- Contact Form -->
+        <!-- ── PIDE CITA ─────────────────────────────── -->
+        {% if agenda_json %}
+        <div class="cita-section" id="pide-cita">
+            <div class="cita-badge">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Reserva tu cita
+            </div>
+            <h2 class="cita-title">Pide Cita</h2>
+            <p class="cita-subtitle">Elige un día disponible en el calendario</p>
+
+            <!-- Month navigation -->
+            <div class="cal-nav">
+                <button class="cal-nav-btn" onclick="prevMonth()" aria-label="Mes anterior">&#8249;</button>
+                <span class="cal-month-label" id="calMonthLabel"></span>
+                <button class="cal-nav-btn" onclick="nextMonth()" aria-label="Mes siguiente">&#8250;</button>
+            </div>
+
+            <!-- Calendar grid (rendered by JS) -->
+            <div class="cal-grid" id="calGrid"></div>
+
+            <!-- Legend -->
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:0.75rem;font-size:0.72rem;color:var(--text-muted);">
+                <span style="display:flex;align-items:center;gap:0.3rem;">
+                    <span style="width:12px;height:12px;border:2px solid var(--primary);border-radius:3px;display:inline-block;"></span>
+                    Disponible
+                </span>
+                <span style="display:flex;align-items:center;gap:0.3rem;">
+                    <span style="width:12px;height:12px;background:#fee2e2;border-radius:3px;display:inline-block;"></span>
+                    Completo
+                </span>
+            </div>
+
+            <!-- Time slots (shown after day selection) -->
+            <div class="slots-section" id="slotsContainer" style="display:none;">
+                <p class="slots-date-label">
+                    Horarios disponibles el <strong id="slotsDateLabel"></strong>:
+                </p>
+                <div class="slot-btns" id="slotBtns"></div>
+            </div>
+
+            <!-- Booking form (shown after slot selection) -->
+            <div class="booking-form-wrap" id="bookingFormWrap" style="display:none;">
+                <div class="booking-summary">
+                    📅 <span id="apptSummary"></span>
+                </div>
+                <form method="POST"
+                      action="{{ url_for('landing.book_appointment', slug=req.public_slug) }}">
+                    {{ appt_form.hidden_tag() }}
+                    <input type="hidden" name="appt_date" id="apptDate">
+                    <input type="hidden" name="appt_time" id="apptTime">
+                    <input type="hidden" name="service_id" id="apptServiceId" value="0">
+
+                    <div class="form-group">
+                        <label for="apptName">Nombre *</label>
+                        <input type="text" id="apptName" name="name" required
+                               placeholder="Tu nombre completo">
+                    </div>
+                    <div class="form-group">
+                        <label for="apptEmail">Email</label>
+                        <input type="email" id="apptEmail" name="email"
+                               placeholder="tu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="apptPhone">Teléfono</label>
+                        <input type="tel" id="apptPhone" name="phone"
+                               placeholder="+34 612 345 678">
+                    </div>
+                    <div class="form-group">
+                        <label for="apptMsg">Mensaje (opcional)</label>
+                        <textarea id="apptMsg" name="message" rows="2"
+                                  placeholder="¿En qué puedo ayudarte?"></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Confirmar cita</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ── Formulario de contacto ─────────────────── -->
         <div class="contact-card">
             <h2>¿Te interesa?</h2>
             <p>Déjame tus datos y me pongo en contacto contigo.</p>
 
             <form method="POST" action="{{ url_for('landing.contact', slug=req.public_slug) }}">
                 {{ form.hidden_tag() }}
-                <!-- Hidden: holds the selected service id (0 = sin preferencia) -->
                 <input type="hidden" name="service_id" id="service_id_input" value="0">
 
                 <div class="form-group">
@@ -274,10 +541,10 @@
             </form>
         </div>
 
-    </div>
+    </div><!-- /.content -->
 
     <script>
-        // Theme toggle
+        // ── Theme toggle ──────────────────────────────
         (function () {
             var btn = document.getElementById('themeToggle');
             if (btn) {
@@ -288,20 +555,199 @@
             }
         }());
 
+        // ── Service card selection ────────────────────
         function selectService(card) {
             var alreadySelected = card.classList.contains('selected');
-            // Deselect all
             document.querySelectorAll('.service-card').forEach(function(c) {
                 c.classList.remove('selected');
             });
-            // Toggle: if it wasn't selected, select it; otherwise leave deselected (0)
             if (!alreadySelected) {
                 card.classList.add('selected');
                 document.getElementById('service_id_input').value = card.dataset.id;
+                var apptSvc = document.getElementById('apptServiceId');
+                if (apptSvc) apptSvc.value = card.dataset.id;
             } else {
                 document.getElementById('service_id_input').value = '0';
+                var apptSvc = document.getElementById('apptServiceId');
+                if (apptSvc) apptSvc.value = '0';
             }
         }
+
+        // ── Calendar ──────────────────────────────────
+        {% if agenda_json %}
+        var AGENDA = {{ agenda_json | safe }};
+        var calYear, calMonth, selectedDate;
+
+        (function init() {
+            var now = new Date();
+            calYear  = now.getFullYear();
+            calMonth = now.getMonth();
+            renderCalendar();
+        })();
+
+        var MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                           'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+        var DAY_NAMES   = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+        var MON_NAMES   = ['enero','febrero','marzo','abril','mayo','junio',
+                           'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+        function renderCalendar() {
+            var cal   = document.getElementById('calGrid');
+            var label = document.getElementById('calMonthLabel');
+            label.textContent = MONTH_NAMES[calMonth] + ' ' + calYear;
+            cal.innerHTML = '';
+
+            // Day headers (Mon-first)
+            ['L','M','X','J','V','S','D'].forEach(function(d) {
+                var el = document.createElement('div');
+                el.className = 'cal-day-header';
+                el.textContent = d;
+                cal.appendChild(el);
+            });
+
+            // Empty cells before first day of month
+            var firstDay = new Date(calYear, calMonth, 1);
+            var startDow = (firstDay.getDay() + 6) % 7; // Mon = 0
+            for (var i = 0; i < startDow; i++) {
+                var empty = document.createElement('div');
+                empty.className = 'cal-day empty';
+                cal.appendChild(empty);
+            }
+
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+            for (var d = 1; d <= daysInMonth; d++) {
+                var cellDate = new Date(calYear, calMonth, d);
+                var dateStr  = fmtDate(calYear, calMonth + 1, d);
+                var dow      = (cellDate.getDay() + 6) % 7;
+
+                var el = document.createElement('div');
+                el.className = 'cal-day';
+                el.textContent = d;
+
+                var isPast  = cellDate < today;
+                var isToday = cellDate.getTime() === today.getTime();
+
+                if (isToday) el.classList.add('today');
+
+                if (isPast) {
+                    el.classList.add('past');
+                } else if (AGENDA.weekdays.indexOf(dow) !== -1) {
+                    var booked    = AGENDA.booked[dateStr] || [];
+                    var allSlots  = genSlots(AGENDA.start, AGENDA.end, AGENDA.slot_minutes);
+                    if (booked.length >= allSlots.length) {
+                        el.classList.add('fully-booked');
+                        el.title = 'Sin plazas disponibles';
+                    } else {
+                        el.classList.add('available');
+                        (function(ds, elem) {
+                            elem.addEventListener('click', function() { pickDay(ds, elem); });
+                        })(dateStr, el);
+                    }
+                } else {
+                    el.classList.add('unavailable');
+                }
+
+                if (dateStr === selectedDate) el.classList.add('selected');
+                cal.appendChild(el);
+            }
+        }
+
+        function fmtDate(y, m, d) {
+            return y + '-' + pad(m) + '-' + pad(d);
+        }
+        function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+        function genSlots(start, end, mins) {
+            var parts = start.split(':');
+            var cur   = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+            var ep    = end.split(':');
+            var endM  = parseInt(ep[0]) * 60 + parseInt(ep[1]);
+            var slots = [];
+            while (cur + mins <= endM) {
+                slots.push(pad(Math.floor(cur / 60)) + ':' + pad(cur % 60));
+                cur += mins;
+            }
+            return slots;
+        }
+
+        function pickDay(dateStr, el) {
+            selectedDate = dateStr;
+            document.querySelectorAll('.cal-day.selected').forEach(function(e) {
+                e.classList.remove('selected');
+            });
+            el.classList.add('selected');
+            renderSlots(dateStr);
+        }
+
+        function renderSlots(dateStr) {
+            var container = document.getElementById('slotsContainer');
+            var btnsDiv   = document.getElementById('slotBtns');
+            var lbl       = document.getElementById('slotsDateLabel');
+
+            var allSlots  = genSlots(AGENDA.start, AGENDA.end, AGENDA.slot_minutes);
+            var booked    = AGENDA.booked[dateStr] || [];
+
+            var parts = dateStr.split('-');
+            var y = parseInt(parts[0]), m = parseInt(parts[1]), d = parseInt(parts[2]);
+            var dow = (new Date(y, m - 1, d).getDay() + 6) % 7;
+            lbl.textContent = DAY_NAMES[dow] + ' ' + d + ' de ' + MON_NAMES[m - 1];
+
+            btnsDiv.innerHTML = '';
+            allSlots.forEach(function(slot) {
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'slot-btn';
+                btn.textContent = slot;
+                if (booked.indexOf(slot) !== -1) {
+                    btn.classList.add('booked');
+                    btn.disabled = true;
+                } else {
+                    (function(s, b) {
+                        b.addEventListener('click', function() { pickSlot(s, b); });
+                    })(slot, btn);
+                }
+                btnsDiv.appendChild(btn);
+            });
+
+            container.style.display = 'block';
+            document.getElementById('bookingFormWrap').style.display = 'none';
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function pickSlot(time, btn) {
+            document.querySelectorAll('.slot-btn.selected').forEach(function(b) {
+                b.classList.remove('selected');
+            });
+            btn.classList.add('selected');
+
+            document.getElementById('apptDate').value = selectedDate;
+            document.getElementById('apptTime').value = time;
+
+            var parts = selectedDate.split('-');
+            var y = parseInt(parts[0]), m = parseInt(parts[1]), d = parseInt(parts[2]);
+            var dow = (new Date(y, m - 1, d).getDay() + 6) % 7;
+            document.getElementById('apptSummary').textContent =
+                DAY_NAMES[dow] + ' ' + d + ' de ' + MON_NAMES[m - 1] + ' a las ' + time;
+
+            var wrap = document.getElementById('bookingFormWrap');
+            wrap.style.display = 'block';
+            wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function prevMonth() {
+            calMonth--;
+            if (calMonth < 0) { calMonth = 11; calYear--; }
+            renderCalendar();
+        }
+        function nextMonth() {
+            calMonth++;
+            if (calMonth > 11) { calMonth = 0; calYear++; }
+            renderCalendar();
+        }
+        {% endif %}
     </script>
 </body>
 </html>

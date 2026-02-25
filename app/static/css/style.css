@@ -1320,6 +1320,76 @@ html.dark .congrats-card p { color: #d1d5db; }
     margin-top: 0.5rem;
 }
 
+/* ── Agenda page ────────────────────────────────────── */
+.agenda-days-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.agenda-day-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.6rem 0.5rem;
+    border: 2px solid var(--color-border);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    min-width: 54px;
+    text-align: center;
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
+}
+
+.agenda-day-label input[type="checkbox"] { display: none; }
+
+.agenda-day-label .agenda-day-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-text-light);
+    line-height: 1;
+}
+
+.agenda-day-label .agenda-day-full {
+    font-size: 0.68rem;
+    color: var(--color-text-light);
+    white-space: nowrap;
+}
+
+.agenda-day-label.checked,
+.agenda-day-label:has(input:checked) {
+    border-color: var(--color-primary);
+    background: var(--color-accent);
+}
+
+.agenda-day-label.checked .agenda-day-name,
+.agenda-day-label:has(input:checked) .agenda-day-name {
+    color: var(--color-primary);
+}
+
+.agenda-day-label:hover {
+    border-color: var(--color-primary);
+}
+
+.agenda-time-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+
+/* Badge variants */
+.badge-danger {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+html.dark .badge-danger {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
 /* ── Footer ─────────────────────────────────────────── */
 .site-footer {
     background: var(--color-bg-alt);
