@@ -505,7 +505,8 @@
         </div>
         {% endif %}
 
-        <!-- ── Formulario de contacto ─────────────────── -->
+        <!-- Formulario de contacto — sólo si no hay agenda configurada -->
+        {% if not agenda_json %}
         <div class="contact-card">
             <h2>¿Te interesa?</h2>
             <p>Déjame tus datos y me pongo en contacto contigo.</p>
@@ -521,25 +522,22 @@
                     <span class="form-error">{{ error }}</span>
                     {% endfor %}
                 </div>
-
                 <div class="form-group">
                     <label for="email">Correo electrónico</label>
                     {{ form.email(id="email", placeholder="tu@email.com") }}
                 </div>
-
                 <div class="form-group">
                     <label for="phone">Teléfono</label>
                     {{ form.phone(id="phone", placeholder="+34 612 345 678") }}
                 </div>
-
                 <div class="form-group">
                     <label for="message">Mensaje (opcional)</label>
                     {{ form.message(id="message", placeholder="¿En qué puedo ayudarte?") }}
                 </div>
-
                 <button type="submit" class="btn-submit">Enviar mis datos</button>
             </form>
         </div>
+        {% endif %}
 
     </div><!-- /.content -->
 
@@ -561,14 +559,11 @@
             document.querySelectorAll('.service-card').forEach(function(c) {
                 c.classList.remove('selected');
             });
+            var apptSvc = document.getElementById('apptServiceId');
             if (!alreadySelected) {
                 card.classList.add('selected');
-                document.getElementById('service_id_input').value = card.dataset.id;
-                var apptSvc = document.getElementById('apptServiceId');
                 if (apptSvc) apptSvc.value = card.dataset.id;
             } else {
-                document.getElementById('service_id_input').value = '0';
-                var apptSvc = document.getElementById('apptServiceId');
                 if (apptSvc) apptSvc.value = '0';
             }
         }

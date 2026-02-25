@@ -213,16 +213,20 @@ def book_appointment(slug):
     appt_form = AppointmentForm()
 
     if not appt_form.validate_on_submit():
-        flash('Por favor, completa nombre, fecha y hora.', 'danger')
+        flash('Por favor, escribe tu nombre.', 'danger')
         return redirect(url_for('landing.public_view', slug=slug) + '#pide-cita')
 
-    appt_date_str = appt_form.appt_date.data
-    appt_time = appt_form.appt_time.data
+    appt_date_str = appt_form.appt_date.data or ''
+    appt_time = appt_form.appt_time.data or ''
+
+    if not appt_date_str or not appt_time:
+        flash('Por favor, selecciona una fecha y hora en el calendario.', 'danger')
+        return redirect(url_for('landing.public_view', slug=slug) + '#pide-cita')
 
     try:
         appt_date = date.fromisoformat(appt_date_str)
     except (ValueError, TypeError):
-        flash('Fecha no válida.', 'danger')
+        flash('Fecha no válida. Selecciona un día en el calendario.', 'danger')
         return redirect(url_for('landing.public_view', slug=slug) + '#pide-cita')
 
     if appt_date < date.today():
