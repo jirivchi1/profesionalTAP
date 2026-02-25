@@ -1,3 +1,4 @@
+from datetime import datetime, timezone, timedelta
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
@@ -6,6 +7,7 @@ from app.forms.service import ServiceForm
 from app.models.professional import Professional
 from app.models.service import Service
 from app.models.landing import LandingRequest
+from app.models.landing_service import LandingService
 from app.models.contact import Contact
 
 dashboard = Blueprint('dashboard', __name__)
@@ -29,12 +31,62 @@ def _generar_mensaje(req, contact, service_name):
     )
 
 
+def _calc_completion(landing_requests):
+    """Return 0-100 profile completion and a list of step dicts."""
+    has_qr = bool(landing_requests)
+    req = landing_requests[0] if has_qr else None
+    steps = [
+        {'label': 'Crea tu primer perfil QR',     'done': has_qr,
+         'url': url_for('landing.create') if not has_qr else None},
+        {'label': 'Añade tu teléfono',            'done': bool(req and req.phone),    'url': None},
+        {'label': 'Añade tu email',               'done': bool(req and req.email),    'url': None},
+        {'label': 'Añade al menos un servicio',   'done': bool(req and req.services), 'url': None},
+        {'label': 'Conecta tu LinkedIn',          'done': bool(req and req.linkedin), 'url': None},
+    ]
+    pct = int(sum(1 for s in steps if s['done']) / len(steps) * 100)
+    return pct, steps
+
+
 @dashboard.route('/dashboard')
 @login_required
 def index():
     landing_requests = LandingRequest.query.filter_by(user_id=current_user.id)\
         .order_by(LandingRequest.created_at.desc()).all()
-    return render_template('dashboard/index.html', landing_requests=landing_requests)
+
+    req_ids = [r.id for r in landing_requests]
+    twelve_months_ago = datetime.now(timezone.utc) - timedelta(days=365)
+
+    if req_ids:
+        contacts_12m = Contact.query.filter(
+            Contact.request_id.in_(req_ids),
+            Contact.created_at >= twelve_months_ago
+        ).count()
+        contacts_total = Contact.query.filter(
+            Contact.request_id.in_(req_ids)
+        ).count()
+        services_count = LandingService.query.filter(
+            LandingService.request_id.in_(req_ids)
+        ).count()
+        recent_contacts = (Contact.query
+            .filter(Contact.request_id.in_(req_ids))
+            .order_by(Contact.created_at.desc())
+            .limit(20).all())
+    else:
+        contacts_12m = contacts_total = services_count = 0
+        recent_contacts = []
+
+    completion_pct, completion_steps = _calc_completion(landing_requests)
+
+    return render_template('dashboard/index.html',
+        landing_requests=landing_requests,
+        contacts_12m=contacts_12m,
+        contacts_total=contacts_total,
+        qr_count=len(landing_requests),
+        services_count=services_count,
+        recent_contacts=recent_contacts,
+        completion_pct=completion_pct,
+        completion_steps=completion_steps,
+    )
 
 
 @dashboard.route('/dashboard/mensaje/<int:contact_id>')

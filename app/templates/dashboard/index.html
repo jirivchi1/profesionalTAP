@@ -1,168 +1,245 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Dashboard - ProfesionalTAP{% endblock %}
+{% block title %}Mi Panel — ProfesionalTAP{% endblock %}
 
 {% block content %}
-<section class="page-section">
-    <div class="container">
-        <h1>Mi panel</h1>
+<div class="dash-layout">
 
-        <div class="dashboard-card">
-            <h2>Mi cuenta</h2>
-            <p><strong>Email:</strong> {{ current_user.email }}</p>
-        </div>
-
-        {% if current_user.professional %}
-        <div class="dashboard-card">
-            <h2>Perfil profesional</h2>
-            <p><strong>Nombre:</strong> {{ current_user.professional.name }}</p>
-            {% if current_user.professional.specialty %}
-            <p><strong>Especialidad:</strong> {{ current_user.professional.specialty }}</p>
-            {% endif %}
-            {% if current_user.professional.phone %}
-            <p><strong>Teléfono:</strong> {{ current_user.professional.phone }}</p>
-            {% endif %}
-            {% if current_user.professional.bio %}
-            <p><strong>Bio:</strong> {{ current_user.professional.bio }}</p>
-            {% endif %}
-            <a href="{{ url_for('dashboard.edit_profile') }}" class="btn btn-sm" style="margin-top:0.5rem;">Editar perfil</a>
-        </div>
-
-        <div class="dashboard-card">
-            <h2>Mis servicios</h2>
-            {% if current_user.professional.services %}
-            <div class="table-wrap">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Título</th>
-                        <th>Precio</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for service in current_user.professional.services %}
-                    <tr>
-                        <td>{{ service.title }}</td>
-                        <td>{{ '%.2f €' % service.price if service.price else 'Sin precio' }}</td>
-                        <td class="actions">
-                            <a href="{{ url_for('dashboard.edit_service', service_id=service.id) }}" class="btn btn-sm">Editar</a>
-                            <form method="POST" action="{{ url_for('dashboard.delete_service', service_id=service.id) }}" class="inline-form">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este servicio?')">Eliminar</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            </div>
+    <!-- ── Sidebar ─────────────────────────────────────── -->
+    <aside class="dash-sidebar">
+        <p class="dash-sidebar-label">Mi Panel</p>
+        <nav class="dash-nav">
+            <a href="#resumen" class="dash-nav-item active">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Inicio
+            </a>
+            <a href="#perfiles-qr" class="dash-nav-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+                Mis Perfiles QR
+            </a>
+            <a href="#solicitudes" class="dash-nav-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Mis Solicitudes
+                {% if contacts_total > 0 %}
+                <span class="dash-nav-badge">{{ contacts_total }}</span>
+                {% endif %}
+            </a>
+            <a href="{{ url_for('landing.create') }}" class="dash-nav-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Nuevo perfil QR
+            </a>
+            {% if current_user.professional %}
+            <a href="{{ url_for('dashboard.edit_profile') }}" class="dash-nav-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Mi Cuenta
+            </a>
             {% else %}
-            <p>Aún no tienes servicios registrados.</p>
+            <a href="{{ url_for('dashboard.create_profile') }}" class="dash-nav-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Mi Cuenta
+            </a>
             {% endif %}
-            <a href="{{ url_for('dashboard.create_service') }}" class="btn" style="margin-top: 1rem;">Añadir servicio</a>
+        </nav>
+
+        <div class="dash-sidebar-footer">
+            <p class="dash-user-email">{{ current_user.email }}</p>
+            <a href="{{ url_for('auth.logout') }}" class="dash-logout-link">Cerrar sesión</a>
         </div>
+    </aside>
 
-        {% else %}
-        <div class="dashboard-card">
-            <h2>Perfil profesional</h2>
-            <p>Aún no has creado tu perfil profesional.</p>
-            <a href="{{ url_for('dashboard.create_profile') }}" class="btn" style="margin-top:0.5rem;">Crear perfil</a>
-        </div>
-        {% endif %}
+    <!-- ── Main content ────────────────────────────────── -->
+    <div class="dash-main" id="resumen">
 
-        <!-- TapShare QR profiles section -->
-        <h2 style="margin-top: 2rem; margin-bottom: 1rem;">Mis perfiles QR</h2>
-
-        {% if landing_requests %}
-        {% for req in landing_requests %}
-        <div class="dashboard-card">
-            <div class="qr-card-header">
-                <div>
-                    <h3 style="margin:0 0 0.2rem;">{{ req.contact_name or req.business_name }}</h3>
-                    <span class="qr-card-sector">{{ req.sector }}</span>
-                </div>
-                <a href="{{ url_for('landing.public_view', slug=req.public_slug) }}"
-                   target="_blank"
-                   class="btn btn-sm btn-secondary">
-                    Ver perfil ↗
-                </a>
+        <!-- Welcome header -->
+        <div class="dash-header">
+            <div>
+                <h1 class="dash-header-title">
+                    Bienvenido, <span>{{ current_user.email.split('@')[0] }}</span>
+                </h1>
+                <p class="dash-header-sub">Aquí tienes el resumen de tu actividad</p>
             </div>
+            <a href="{{ url_for('landing.create') }}" class="btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:0.35rem;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nuevo perfil QR
+            </a>
+        </div>
 
-            {% set total_contacts = req.contacts | length %}
-            {% if total_contacts > 0 %}
-            {# Compute most demanded service #}
-            {% set ns = namespace(max_count=0, max_title='') %}
-            {% for contact in req.contacts %}
-                {% if contact.service_id %}
-                    {% set count = req.contacts | selectattr('service_id', 'equalto', contact.service_id) | list | length %}
-                    {% if count > ns.max_count %}
-                        {% set ns.max_count = count %}
-                        {% set ns.max_title = contact.service.title %}
+        <!-- Profile completion -->
+        {% if completion_pct < 100 %}
+        <div class="dash-completion">
+            <div class="dash-completion-header">
+                <span class="dash-completion-title">Completa tu Perfil</span>
+                <span class="dash-completion-pct">{{ completion_pct }}%</span>
+            </div>
+            <div class="dash-progress-track">
+                <div class="dash-progress-fill" style="width: {{ completion_pct }}%"></div>
+            </div>
+            <ul class="dash-completion-steps">
+                {% for step in completion_steps %}
+                <li class="dash-completion-step {% if step.done %}done{% endif %}">
+                    <span class="step-check">
+                        {% if step.done %}
+                        <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg>
+                        {% endif %}
+                    </span>
+                    {% if step.url and not step.done %}
+                    <a href="{{ step.url }}" class="step-label-link">{{ step.label }}</a>
+                    {% else %}
+                    <span>{{ step.label }}</span>
                     {% endif %}
-                {% endif %}
-            {% endfor %}
-
-            <div class="qr-stats-row">
-                <div>
-                    <span class="qr-stat-number">{{ total_contacts }}</span>
-                    <span class="qr-stat-label">contactos totales</span>
-                </div>
-                {% if ns.max_title %}
-                <div>
-                    <span class="qr-stat-service">{{ ns.max_title }} ({{ ns.max_count }})</span>
-                    <span class="qr-stat-label">servicio más demandado</span>
-                </div>
-                {% endif %}
-            </div>
-
-            <div class="table-wrap">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Servicio</th>
-                        <th>Email</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for contact in req.contacts %}
-                    <tr>
-                        <td>{{ contact.name }}</td>
-                        <td>{{ contact.service.title if contact.service_id else 'Sin preferencia' }}</td>
-                        <td>{{ contact.email or '—' }}</td>
-                        <td>
-                            <button class="btn btn-sm" onclick="abrirMensaje({{ contact.id }})">
-                                Mensaje ✨
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            </div>
-            {% else %}
-            <p class="text-light" style="margin-top:0.75rem;">
-                Aún no has recibido contactos. Comparte tu QR para empezar.
-            </p>
-            {% endif %}
-        </div>
-        {% endfor %}
-
-        {% else %}
-        <div class="dashboard-card" style="text-align:center; padding: 2.5rem 1.5rem;">
-            <p class="text-light" style="margin-bottom:1rem;">
-                Aún no tienes ningún perfil QR creado.
-            </p>
-            <a href="{{ url_for('landing.create') }}" class="btn">Crear mi perfil QR</a>
+                </li>
+                {% endfor %}
+            </ul>
         </div>
         {% endif %}
 
-    </div>
-</section>
+        <!-- Stat cards -->
+        <div class="dash-stats">
+            <div class="stat-card">
+                <div class="stat-card-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.73a16 16 0 0 0 5.9 5.9l1.74-1.74a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <div class="stat-card-number">{{ contacts_12m }}</div>
+                <div class="stat-card-label">Solicitudes recibidas</div>
+                <div class="stat-card-period">últimos 12 meses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="stat-card-number">{{ contacts_total }}</div>
+                <div class="stat-card-label">Contactos totales</div>
+                <div class="stat-card-period">desde el inicio</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/></svg>
+                </div>
+                <div class="stat-card-number">{{ qr_count }}</div>
+                <div class="stat-card-label">Perfiles QR activos</div>
+                <div class="stat-card-period">en total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+                </div>
+                <div class="stat-card-number">{{ services_count }}</div>
+                <div class="stat-card-label">Servicios publicados</div>
+                <div class="stat-card-period">en todos tus perfiles</div>
+            </div>
+        </div>
 
-<!-- Mensaje modal -->
+        <!-- ── Mis Perfiles QR ─────────────────────────── -->
+        <section id="perfiles-qr">
+            <div class="dash-section-header">
+                <h2 class="dash-section-title">Mis Perfiles QR</h2>
+                <a href="{{ url_for('landing.create') }}" class="btn btn-sm btn-secondary">Crear nuevo</a>
+            </div>
+
+            {% if landing_requests %}
+            <div class="qr-profiles-grid">
+                {% for req in landing_requests %}
+                <div class="qr-profile-card">
+                    <div class="qr-profile-top">
+                        <div class="qr-profile-info">
+                            <h3>{{ req.contact_name or req.business_name }}</h3>
+                            <span class="qr-card-sector">{{ req.sector }}</span>
+                        </div>
+                        <a href="{{ url_for('landing.public_view', slug=req.public_slug) }}"
+                           target="_blank" class="btn btn-sm btn-secondary">
+                            Ver perfil ↗
+                        </a>
+                    </div>
+
+                    <div class="qr-profile-stats">
+                        <div class="qp-stat">
+                            <span class="qp-stat-num">{{ req.contacts | length }}</span>
+                            <span class="qp-stat-lbl">contactos</span>
+                        </div>
+                        <div class="qp-stat">
+                            <span class="qp-stat-num">{{ req.services | length }}</span>
+                            <span class="qp-stat-lbl">servicios</span>
+                        </div>
+                        <div class="qp-stat qp-stat--date">
+                            <span class="qp-stat-lbl">Creado</span>
+                            <span class="qp-stat-num qp-stat-num--sm">
+                                {{ req.created_at.strftime('%d/%m/%Y') if req.created_at else '—' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <div class="dash-empty-state">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-light);margin-bottom:1rem;"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/></svg>
+                <p>Aún no tienes ningún perfil QR creado.</p>
+                <a href="{{ url_for('landing.create') }}" class="btn" style="margin-top:1rem;">Crear mi perfil QR</a>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- ── Mis Solicitudes ────────────────────────── -->
+        <section id="solicitudes" style="margin-top: 2rem;">
+            <div class="dash-section-header">
+                <h2 class="dash-section-title">Mis Solicitudes</h2>
+                {% if contacts_total > 0 %}
+                <span class="dash-section-badge">{{ contacts_total }} en total</span>
+                {% endif %}
+            </div>
+
+            {% if recent_contacts %}
+            <div class="dashboard-card" style="padding:0; overflow:hidden;">
+                <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Perfil QR</th>
+                            <th>Servicio</th>
+                            <th>Email</th>
+                            <th>Fecha</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contact in recent_contacts %}
+                        <tr>
+                            <td>
+                                <span class="contact-name-cell">{{ contact.name }}</span>
+                            </td>
+                            <td class="text-light-cell">
+                                {{ contact.request.contact_name or contact.request.business_name }}
+                            </td>
+                            <td>{{ contact.service.title if contact.service_id else '—' }}</td>
+                            <td>{{ contact.email or '—' }}</td>
+                            <td class="text-light-cell">
+                                {{ contact.created_at.strftime('%d/%m/%y') if contact.created_at else '—' }}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm" onclick="abrirMensaje({{ contact.id }})">
+                                    Mensaje ✨
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="dash-empty-state">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-light);margin-bottom:1rem;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <p>Aún no has recibido solicitudes. Comparte tu QR para empezar.</p>
+            </div>
+            {% endif %}
+        </section>
+
+    </div><!-- /.dash-main -->
+</div><!-- /.dash-layout -->
+
+<!-- ── Mensaje modal ──────────────────────────────────── -->
 <dialog id="mensajeModal" class="message-modal">
     <h3>Mensaje de seguimiento</h3>
     <textarea id="mensajeTexto" class="message-textarea" readonly></textarea>
@@ -178,13 +255,11 @@ function abrirMensaje(contactId) {
     const textarea = document.getElementById('mensajeTexto');
     textarea.value = 'Cargando…';
     modal.showModal();
-
     fetch('/dashboard/mensaje/' + contactId)
         .then(r => r.json())
         .then(data => { textarea.value = data.message; })
         .catch(() => { textarea.value = 'Error al cargar el mensaje.'; });
 }
-
 function copiarMensaje() {
     const texto = document.getElementById('mensajeTexto').value;
     navigator.clipboard.writeText(texto).then(() => {
@@ -193,5 +268,21 @@ function copiarMensaje() {
         setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
     });
 }
+// Highlight active nav link based on scroll position
+(function () {
+    const sections = ['resumen', 'perfiles-qr', 'solicitudes'];
+    const links = document.querySelectorAll('.dash-nav-item[href^="#"]');
+    function onScroll() {
+        let current = 'resumen';
+        sections.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.getBoundingClientRect().top < 120) current = id;
+        });
+        links.forEach(a => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+        });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+}());
 </script>
 {% endblock %}

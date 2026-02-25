@@ -1,6 +1,3 @@
-import io
-import base64
-import qrcode
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request
 from flask_login import login_required, current_user
 from app.extensions import db
@@ -8,6 +5,7 @@ from app.forms.landing import LandingForm, ContactForm
 from app.models.landing import LandingRequest
 from app.models.landing_service import LandingService
 from app.models.contact import Contact
+from app.services.landing_service import generate_qr, build_prompt
 
 landing = Blueprint('landing', __name__)
 
@@ -52,14 +50,6 @@ SECTOR_THEMES = {
 }
 
 
-def _generate_qr_b64(url: str) -> str:
-    """Generate a QR code for *url* and return it as a base64-encoded PNG string."""
-    img = qrcode.make(url)
-    buf = io.BytesIO()
-    img.save(buf, format='PNG')
-    return base64.b64encode(buf.getvalue()).decode('utf-8')
-
-
 @landing.route('/comenzar', methods=['GET', 'POST'])
 def create():
     """Public — no login required."""
@@ -87,6 +77,7 @@ def create():
             (form.service_2_title.data, form.service_2_description.data),
             (form.service_3_title.data, form.service_3_description.data),
         ]
+        saved_services = []
         for i, (title, desc) in enumerate(services_data):
             if title and title.strip():
                 svc = LandingService(
@@ -96,10 +87,14 @@ def create():
                     order=i,
                 )
                 db.session.add(svc)
+                saved_services.append(svc)
 
         # Generate QR pointing to the public profile
         public_url = url_for('landing.public_view', slug=req.public_slug, _external=True)
-        req.qr_code = _generate_qr_b64(public_url)
+        req.qr_code = generate_qr(public_url)
+
+        # Build AI-ready prompt from sector template and professional data
+        req.generated_prompt = build_prompt(req, saved_services)
 
         db.session.commit()
 
@@ -119,10 +114,18 @@ def result(slug):
 
 @landing.route('/mis-landings')
 @login_required
-def list():
+def my_landings():
     requests = LandingRequest.query.filter_by(user_id=current_user.id)\
         .order_by(LandingRequest.created_at.desc()).all()
     return render_template('landing/list.html', requests=requests)
+
+
+@landing.route('/mis-landings/<int:id>')
+@login_required
+def detail(id):
+    req = LandingRequest.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    theme = SECTOR_THEMES.get(req.sector, SECTOR_THEMES['abogatap'])
+    return render_template('landing/detail.html', req=req, theme=theme)
 
 
 def _service_choices(req):

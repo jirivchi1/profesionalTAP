@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, Length, Optional
+from wtforms.validators import DataRequired, Length, Optional, ValidationError
 
 
 class LandingForm(FlaskForm):
@@ -38,6 +38,21 @@ class LandingForm(FlaskForm):
     service_3_description = TextAreaField('Descripción', validators=[Optional()])
 
     submit = SubmitField('Crear mi perfil y QR')
+
+    def validate(self, extra_validators=None):
+        if not super().validate(extra_validators):
+            return False
+        titles = [
+            self.service_1_title.data,
+            self.service_2_title.data,
+            self.service_3_title.data,
+        ]
+        if not any(t and t.strip() for t in titles):
+            self.service_1_title.errors.append(
+                'Añade al menos un servicio para continuar.'
+            )
+            return False
+        return True
 
 
 class ContactForm(FlaskForm):

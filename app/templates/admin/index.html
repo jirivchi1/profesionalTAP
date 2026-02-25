@@ -74,7 +74,7 @@
                         <td>#{{ req.id }}</td>
                         <td><span class="badge {{ 'badge-b2b' if req.is_b2b else 'badge-b2c' }}">{{ req.landing_type | upper }}</span></td>
                         <td>{{ req.sector | upper }}</td>
-                        <td>{{ req.user.email }}</td>
+                        <td>{{ req.user.email if req.user else '—' }}</td>
                         <td>{{ req.business_name }}</td>
                         <td>{{ req.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                     </tr>
