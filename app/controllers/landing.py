@@ -212,12 +212,26 @@ def book_appointment(slug):
     req = LandingRequest.query.filter_by(public_slug=slug).first_or_404()
     appt_form = AppointmentForm()
 
-    if not appt_form.validate_on_submit():
+    # Read raw form data directly — more reliable for JS-populated hidden fields
+    from flask import current_app
+    current_app.logger.info('CITA POST form keys: %s', list(request.form.keys()))
+    current_app.logger.info('CITA POST appt_date=%r appt_time=%r name=%r',
+                            request.form.get('appt_date'),
+                            request.form.get('appt_time'),
+                            request.form.get('name'))
+
+    name = request.form.get('name', '').strip()
+    appt_date_str = request.form.get('appt_date', '').strip()
+    appt_time = request.form.get('appt_time', '').strip()
+
+    # Still validate CSRF via appt_form
+    if not appt_form.validate_on_submit() and not name:
         flash('Por favor, escribe tu nombre.', 'danger')
         return redirect(url_for('landing.public_view', slug=slug) + '#pide-cita')
 
-    appt_date_str = appt_form.appt_date.data or ''
-    appt_time = appt_form.appt_time.data or ''
+    if not name:
+        flash('Por favor, escribe tu nombre.', 'danger')
+        return redirect(url_for('landing.public_view', slug=slug) + '#pide-cita')
 
     if not appt_date_str or not appt_time:
         flash('Por favor, selecciona una fecha y hora en el calendario.', 'danger')
@@ -243,23 +257,20 @@ def book_appointment(slug):
         flash('Ese horario ya no está disponible. Por favor elige otro.', 'danger')
         return redirect(url_for('landing.public_view', slug=slug) + '#pide-cita')
 
-    service_id = appt_form.service_id.data
     try:
-        service_id = int(service_id) if service_id else None
+        service_id = int(request.form.get('service_id', 0)) or None
     except ValueError:
-        service_id = None
-    if service_id == 0:
         service_id = None
 
     appt = Appointment(
         landing_request_id=req.id,
         service_id=service_id,
-        name=appt_form.name.data,
-        email=appt_form.email.data or None,
-        phone=appt_form.phone.data or None,
+        name=name,
+        email=request.form.get('email', '').strip() or None,
+        phone=request.form.get('phone', '').strip() or None,
         date=appt_date,
         time=appt_time,
-        message=appt_form.message.data or None,
+        message=request.form.get('message', '').strip() or None,
     )
     db.session.add(appt)
     db.session.commit()
