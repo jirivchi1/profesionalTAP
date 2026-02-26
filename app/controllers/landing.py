@@ -141,7 +141,6 @@ def create():
             contact_name=form.contact_name.data,
             phone=form.phone.data,
             email=form.email.data,
-            linkedin=form.linkedin.data,
             website=form.website.data,
         )
         db.session.add(req)
