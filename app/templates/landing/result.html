@@ -32,7 +32,27 @@
         </div>
 
         <!-- CTA account creation -->
-        {% if current_user.is_authenticated %}
+        {% if is_mine %}
+        <div class="dashboard-card" style="text-align: center;">
+            <h2>Este QR ya está en tu dashboard</h2>
+            <p class="text-light" style="margin-bottom:1.5rem;">
+                Ve a tu dashboard para ver quién ha escaneado tu QR y enviarles un mensaje de seguimiento.
+            </p>
+            <a href="{{ url_for('dashboard.index') }}" class="btn">Ir a mi dashboard</a>
+        </div>
+        {% elif can_claim %}
+        <div class="dashboard-card" style="text-align: center;">
+            <h2>Añade este QR a tu dashboard</h2>
+            <p class="text-light" style="margin-bottom:1.5rem;">
+                Vincula este perfil a tu cuenta para gestionar los contactos y citas desde tu dashboard.
+            </p>
+            <form method="POST" action="{{ url_for('landing.claim', slug=req.public_slug) }}" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn" style="margin-right: 0.5rem;">Añadir a mi dashboard</button>
+            </form>
+            <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline">Ir al dashboard</a>
+        </div>
+        {% elif current_user.is_authenticated %}
         <div class="dashboard-card" style="text-align: center;">
             <h2>Gestiona tus contactos</h2>
             <p class="text-light" style="margin-bottom:1.5rem;">

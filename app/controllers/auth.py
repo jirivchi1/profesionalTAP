@@ -36,6 +36,10 @@ def register():
                 req.user_id = user.id
                 db.session.commit()
 
+        # Also auto-link any other unclaimed profiles created with this email
+        LandingRequest.query.filter_by(email=user.email, user_id=None).update({'user_id': user.id})
+        db.session.commit()
+
         login_user(user)
         flash('¡Bienvenido a la comunidad!', 'success')
 
@@ -56,6 +60,9 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
+            # Auto-link any unclaimed QR profiles created with this email
+            LandingRequest.query.filter_by(email=user.email, user_id=None).update({'user_id': user.id})
+            db.session.commit()
             next_page = request.args.get('next')
             flash('Sesión iniciada correctamente.', 'success')
             return redirect(next_page or url_for('public.home'))

@@ -140,7 +140,21 @@ def result(slug):
     """Public result page — QR + community invite."""
     req = LandingRequest.query.filter_by(public_slug=slug).first_or_404()
     theme = SECTOR_THEMES.get(req.sector, SECTOR_THEMES['abogatap'])
-    return render_template('landing/result.html', req=req, theme=theme)
+    is_mine = current_user.is_authenticated and req.user_id == current_user.id
+    can_claim = current_user.is_authenticated and req.user_id is None
+    return render_template('landing/result.html', req=req, theme=theme,
+                           is_mine=is_mine, can_claim=can_claim)
+
+
+@landing.route('/resultado/<slug>/reclamar', methods=['POST'])
+@login_required
+def claim(slug):
+    """Claim an unclaimed QR profile and add it to the current user's dashboard."""
+    req = LandingRequest.query.filter_by(public_slug=slug, user_id=None).first_or_404()
+    req.user_id = current_user.id
+    db.session.commit()
+    flash('Perfil añadido a tu dashboard.', 'success')
+    return redirect(url_for('dashboard.index'))
 
 
 @landing.route('/mis-landings')
