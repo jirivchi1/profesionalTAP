@@ -1,0 +1,14 @@
+Genera el código HTML completo de una landing page profesional para un psicólogo o terapeuta.
+
+Datos del negocio:
+- Nombre: {nombre}
+- Descripción: {descripcion}
+- Ubicación: {ubicacion}
+
+Instrucciones específicas para el sector:
+- Usa un diseño cálido, cercano y tranquilizador que transmita seguridad y empatía.
+- Incluye secciones: hero con nombre del profesional, especialidades (ansiedad, depresión, terapia de pareja, etc.), método de trabajo, sobre mí y formulario de contacto.
+- Destaca valores como confidencialidad, escucha activa y acompañamiento sin juicios.
+- Usa una paleta suave: tonos lila, lavanda y blanco.
+- Añade una llamada a la acción del tipo "Reserva tu primera sesión" o "Consulta sin compromiso".
+- El HTML debe ser responsive y autónomo (CSS inline o en <style>).

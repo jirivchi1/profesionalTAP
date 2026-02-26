@@ -42,10 +42,7 @@ def register():
 
         login_user(user)
         flash('¡Bienvenido a la comunidad!', 'success')
-
-        if comunidad:
-            return redirect(url_for('dashboard.index'))
-        return redirect(url_for('public.home'))
+        return redirect(url_for('dashboard.index'))
 
     return render_template('auth/register.html', form=form, comunidad=comunidad)
 

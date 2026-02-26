@@ -1,0 +1,14 @@
+Genera el código HTML completo de una landing page profesional para un profesional o agencia de marketing digital.
+
+Datos del negocio:
+- Nombre: {nombre}
+- Descripción: {descripcion}
+- Ubicación: {ubicacion}
+
+Instrucciones específicas para el sector:
+- Usa un diseño moderno, dinámico y visualmente impactante que transmita creatividad y resultados.
+- Incluye secciones: hero con propuesta de valor, servicios (redes sociales, SEO, publicidad, email marketing, etc.), resultados/métricas, sobre nosotros y formulario de contacto.
+- Destaca valores como ROI, crecimiento medible, estrategia personalizada y atención cercana.
+- Usa una paleta vibrante: rosa, fucsia, negro y blanco.
+- Añade una llamada a la acción del tipo "Consigue más clientes" o "Hablemos de tu proyecto".
+- El HTML debe ser responsive y autónomo (CSS inline o en <style>).

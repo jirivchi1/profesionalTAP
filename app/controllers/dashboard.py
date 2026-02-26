@@ -51,7 +51,7 @@ def _calc_completion(landing_requests):
         {'label': 'Añade tu teléfono',            'done': bool(req and req.phone),    'url': None},
         {'label': 'Añade tu email',               'done': bool(req and req.email),    'url': None},
         {'label': 'Añade al menos un servicio',   'done': bool(req and req.services), 'url': None},
-        {'label': 'Conecta tu LinkedIn',          'done': bool(req and req.linkedin), 'url': None},
+        {'label': 'Añade tu página web',           'done': bool(req and req.website),  'url': None},
     ]
     pct = int(sum(1 for s in steps if s['done']) / len(steps) * 100)
     return pct, steps

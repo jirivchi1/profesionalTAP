@@ -5,10 +5,15 @@ from wtforms.validators import DataRequired, Length, Optional, ValidationError
 
 class LandingForm(FlaskForm):
     sector = SelectField('Sector', choices=[
-        ('abogatap', 'AbogaTAP - Abogados'),
-        ('segurotap', 'SeguroTAP - Seguros'),
-        ('inmotap', 'InmoTAP - Inmobiliaria'),
-        ('consultortap', 'ConsultorTAP - Consultoría'),
+        ('abogatap',     'AbogaTAP — Abogados'),
+        ('segurotap',    'SeguroTAP — Seguros'),
+        ('inmotap',      'InmoTAP — Inmobiliaria'),
+        ('consultortap', 'ConsultorTAP — Consultoría'),
+        ('gestoratap',   'GestoraTAP — Gestoría y Asesoría'),
+        ('psicologiatap','PsicologíaTAP — Psicología'),
+        ('reformatap',   'ReformaTAP — Reformas y Construcción'),
+        ('marketingtap', 'MarketingTAP — Marketing Digital'),
+        ('saludtap',     'SaludTAP — Salud y Bienestar'),
     ], validators=[DataRequired()])
 
     contact_name = StringField('Nombre completo', validators=[
@@ -19,9 +24,6 @@ class LandingForm(FlaskForm):
     ])
     email = StringField('Correo electrónico', validators=[
         Optional(), Length(max=150)
-    ])
-    linkedin = StringField('LinkedIn (URL)', validators=[
-        Optional(), Length(max=200)
     ])
     website = StringField('Página web', validators=[
         Optional(), Length(max=200)

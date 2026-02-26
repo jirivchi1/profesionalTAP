@@ -1,0 +1,14 @@
+Genera el código HTML completo de una landing page profesional para una gestoría o asesoría fiscal.
+
+Datos del negocio:
+- Nombre: {nombre}
+- Descripción: {descripcion}
+- Ubicación: {ubicacion}
+
+Instrucciones específicas para el sector:
+- Usa un diseño formal y de confianza que transmita profesionalidad y rigor.
+- Incluye secciones: hero con nombre de la gestoría, servicios ofrecidos (declaraciones, autónomos, sociedades), sobre nosotros y formulario de contacto.
+- Destaca valores como puntualidad, confidencialidad y experiencia con autónomos y pymes.
+- Usa una paleta sobria: azul oscuro, gris pizarra y blanco.
+- Añade una llamada a la acción del tipo "Primera consulta gratuita" o "Llámanos ahora".
+- El HTML debe ser responsive y autónomo (CSS inline o en <style>).

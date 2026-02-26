@@ -1,0 +1,14 @@
+Genera el código HTML completo de una landing page profesional para una empresa de reformas y construcción.
+
+Datos del negocio:
+- Nombre: {nombre}
+- Descripción: {descripcion}
+- Ubicación: {ubicacion}
+
+Instrucciones específicas para el sector:
+- Usa un diseño robusto y visual con imágenes de fondo que transmitan trabajo bien hecho.
+- Incluye secciones: hero con nombre de la empresa, servicios (reformas integrales, baños, cocinas, pintura, etc.), galería de proyectos, sobre nosotros y formulario de contacto/presupuesto.
+- Destaca valores como garantía, puntualidad, presupuesto sin compromiso y años de experiencia.
+- Usa una paleta cálida: naranja, amarillo ocre, gris y blanco.
+- Añade una llamada a la acción del tipo "Pide tu presupuesto gratis" o "Llámanos hoy".
+- El HTML debe ser responsive y autónomo (CSS inline o en <style>).

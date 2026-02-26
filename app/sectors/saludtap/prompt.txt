@@ -1,0 +1,14 @@
+Genera el código HTML completo de una landing page profesional para un profesional de la salud y el bienestar.
+
+Datos del negocio:
+- Nombre: {nombre}
+- Descripción: {descripcion}
+- Ubicación: {ubicacion}
+
+Instrucciones específicas para el sector:
+- Usa un diseño limpio, fresco y de confianza que transmita salud, bienestar y profesionalidad.
+- Incluye secciones: hero con nombre del profesional, especialidades (fisioterapia, nutrición, osteopatía, etc.), método de trabajo, sobre mí y formulario de contacto/cita previa.
+- Destaca valores como tratamiento personalizado, evidencia científica y resultados reales.
+- Usa una paleta fresca: verde azulado, blanco y gris claro.
+- Añade una llamada a la acción del tipo "Reserva tu cita" o "Primera valoración gratuita".
+- El HTML debe ser responsive y autónomo (CSS inline o en <style>).
